@@ -3,48 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GAME CENTRAL STATION OS</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<title>GAME CENTRAL STATION OS — Wreck-It Ralph</title>
+<meta name="description" content="Game Central Station OS — An interactive Wreck-It Ralph arcade management simulator. Fix glitches, battle Ralph, save the games!">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/global.css">
 <style>
-:root{--red:#ff2442;--gold:#ffd700;--blue:#00d4ff;--green:#39ff14;--purple:#bf00ff;--bg:#07070f;--panel:rgba(8,5,20,.95)}
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;background:var(--bg);color:#fff;font-family:'VT323',monospace;overflow:hidden;cursor:none;user-select:none}
-#cursor{position:fixed;z-index:999999;pointer-events:none;font-size:26px;line-height:1;transform:translate(-50%,-50%);transition:transform .04s}
-body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
-#scanlines{position:fixed;inset:0;z-index:99990;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(0,0,0,.18) 3px,rgba(0,0,0,.18) 4px)}
-#pixelgrid{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:40px 40px}
+/* ── STABILITY HUD ── */
 #stab-hud{position:fixed;top:10px;right:14px;z-index:9000;display:none;flex-direction:column;align-items:flex-end;gap:3px}
 .stab-label{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--red)}
 .stab-track{width:150px;height:10px;border:2px solid var(--red);background:rgba(255,36,66,.08);overflow:hidden}
 .stab-fill{height:100%;width:73%;background:linear-gradient(90deg,var(--red),var(--gold));transition:width .4s}
 #stab-pct{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--red)}
+
+/* ── SCREENS ── */
 .screen{position:fixed;inset:0;z-index:100;display:none;flex-direction:column}
 .screen.active{display:flex}
-@keyframes flicker{0%,18%,22%,25%,54%,56%,100%{opacity:1}20%,24%,55%{opacity:.4}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-@keyframes shake{0%,100%{transform:translate(0)}15%{transform:translate(-4px,2px)}30%{transform:translate(4px,-2px)}45%{transform:translate(-3px,3px)}60%{transform:translate(3px,-1px)}75%{transform:translate(-2px,2px)}}
-@keyframes pixIn{0%{filter:blur(16px) brightness(3);opacity:0;transform:scale(1.08)}60%{filter:blur(4px) brightness(1.4);opacity:.8}100%{filter:blur(0) brightness(1);opacity:1;transform:scale(1)}}
-@keyframes pulseRed{0%,100%{box-shadow:0 0 8px var(--red),0 0 18px var(--red),inset 0 0 8px rgba(255,36,66,.08)}50%{box-shadow:0 0 18px var(--red),0 0 40px var(--red),0 0 70px rgba(255,36,66,.25),inset 0 0 16px rgba(255,36,66,.16)}}
-@keyframes brickFall{to{transform:translate(var(--tx),var(--ty)) rotate(var(--rot));opacity:0}}
-@keyframes confettiFall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
-@keyframes glitchPop{0%{opacity:0;background:transparent;transform:translate(0)}10%{opacity:.5;background:rgba(255,36,66,.25);transform:translate(-4px,2px)}25%{opacity:.6;background:rgba(0,212,255,.2);transform:translate(4px,-2px)}40%{opacity:.4;background:rgba(191,0,255,.2);transform:translate(-2px,2px)}60%{opacity:.3;background:rgba(57,255,20,.15);transform:translate(2px,-1px)}100%{opacity:0;background:transparent;transform:translate(0)}}
-@keyframes glitchA{0%,100%{clip-path:inset(0 0 98% 0);transform:translate(-5px);color:var(--red)}25%{clip-path:inset(30% 0 50% 0);transform:translate(5px);color:var(--blue)}50%{clip-path:inset(60% 0 20% 0);transform:translate(-3px);color:var(--purple)}75%{clip-path:inset(80% 0 5% 0);transform:translate(3px);color:var(--green)}}
-@keyframes glitchB{0%,100%{clip-path:inset(50% 0 30% 0);transform:translate(4px)}33%{clip-path:inset(10% 0 70% 0);transform:translate(-4px)}66%{clip-path:inset(70% 0 10% 0);transform:translate(2px)}}
-#glitch-overlay{position:fixed;inset:0;z-index:9989;pointer-events:none;opacity:0}
-#glitch-overlay.pop{animation:glitchPop .35s forwards}
-.px-btn{font-family:'Press Start 2P',monospace;font-size:9px;padding:10px 18px;background:transparent;cursor:none;border:2px solid var(--gold);color:var(--gold);transition:all .12s;letter-spacing:1px;text-transform:uppercase}
-.px-btn:hover{background:var(--gold);color:#000;box-shadow:0 0 18px var(--gold),0 0 36px rgba(255,215,0,.4);transform:translateY(-2px)}
-.px-btn:active{transform:translateY(0) scale(.95)}
-.px-btn.red{border-color:var(--red);color:var(--red)}.px-btn.red:hover{background:var(--red);color:#fff;box-shadow:0 0 18px var(--red)}
-.px-btn.blue{border-color:var(--blue);color:var(--blue)}.px-btn.blue:hover{background:var(--blue);color:#000;box-shadow:0 0 18px var(--blue)}
-.px-btn.grn{border-color:var(--green);color:var(--green)}.px-btn.grn:hover{background:var(--green);color:#000;box-shadow:0 0 18px var(--green)}
-.px-btn:disabled{opacity:.35;pointer-events:none}
-.panel{background:var(--panel);border:2px solid var(--red);animation:pulseRed 3s ease-in-out infinite}
-.gt{position:relative;display:inline-block;font-family:'Press Start 2P',monospace}
-.gt::before{content:attr(data-t);position:absolute;inset:0;animation:glitchA 2.5s infinite}
-.gt::after{content:attr(data-t);position:absolute;inset:0;animation:glitchB 2.5s infinite}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#111}::-webkit-scrollbar-thumb{background:var(--red)}
 
 /* ── BOOT ── */
 #s-boot{background:#000;align-items:center;justify-content:center;gap:24px}
@@ -58,17 +31,21 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
 #boot-pct{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--green);text-align:right}
 #boot-warn{display:none;font-family:'Press Start 2P',monospace;font-size:8px;color:var(--red);text-align:center;border:2px solid var(--red);padding:14px;line-height:2;animation:shake .4s ease;background:rgba(255,36,66,.05)}
 #boot-enter{display:none;text-align:center;font-family:'Press Start 2P',monospace;font-size:9px;color:var(--gold);animation:blink 1s infinite;cursor:none;padding:12px;margin-top:8px}
+.boot-nav-hint{font-family:'Press Start 2P',monospace;font-size:6px;color:rgba(255,255,255,0.3);text-align:center;margin-top:6px}
 
 /* ── GAME SELECT ── */
-#s-games{background:radial-gradient(ellipse at center,#15001e 0%,var(--bg) 70%);padding:14px 18px;gap:12px;position:relative}
+#s-games{background:radial-gradient(ellipse at center,#15001e 0%,var(--bg) 70%);padding:0;gap:0;position:relative;flex-direction:column}
+.ticker-inside{flex-shrink:0}
+.gs-main{flex:1;display:flex;flex-direction:column;gap:12px;padding:14px 18px;overflow-y:auto}
 .gs-topbar{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--red);padding-bottom:10px;flex-wrap:wrap;gap:8px}
 .gs-left h1{font-family:'Press Start 2P',monospace;font-size:clamp(9px,1.8vw,15px);color:var(--red);text-shadow:2px 2px 0 #500,0 0 18px rgba(255,36,66,.4)}
 .gs-left p{font-size:16px;color:rgba(255,255,255,.4);margin-top:4px}
-.gs-nav{display:flex;gap:8px;flex-wrap:wrap}
-.nav-tab{font-family:'Press Start 2P',monospace;font-size:6px;padding:6px 10px;background:transparent;cursor:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.4);transition:all .1s}
+.gs-nav{display:flex;gap:6px;flex-wrap:wrap}
+.nav-tab{font-family:'Press Start 2P',monospace;font-size:6px;padding:6px 10px;background:transparent;cursor:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.4);transition:all .1s;text-decoration:none}
 .nav-tab:hover,.nav-tab.on{border-color:var(--gold);color:var(--gold);background:rgba(255,215,0,.06)}
 #gs-ralph{position:absolute;right:18px;bottom:55px;width:130px;opacity:.15;pointer-events:none;animation:float 4s ease-in-out infinite;z-index:1}
-.games-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;flex:1;position:relative;z-index:2;animation:pixIn .5s ease}
+.games-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;position:relative;z-index:2;animation:pixIn .5s ease}
+@media(max-width:700px){.games-grid{grid-template-columns:1fr}}
 .game-card{border:2px solid rgba(255,36,66,.25);background:rgba(8,3,18,.92);padding:18px;cursor:none;transition:all .18s;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:10px}
 .game-card:hover{border-color:var(--red);box-shadow:0 0 22px rgba(255,36,66,.35);transform:translateY(-4px)}
 .game-card.shaking{animation:shake .3s infinite}
@@ -80,7 +57,7 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
 .s-off{color:#555;border-color:#333}
 .card-desc{font-size:14px;color:#999;text-align:center;line-height:1.4}
 .ralph-badge{position:absolute;bottom:0;left:0;right:0;background:var(--red);color:#fff;font-family:'Press Start 2P',monospace;font-size:6px;padding:4px;text-align:center;animation:blink .5s infinite}
-#emergency-btn{position:fixed;bottom:16px;right:16px;z-index:5000;font-size:8px;padding:8px 14px}
+#emergency-btn{font-size:8px;padding:8px 14px;align-self:flex-end}
 
 /* ── CHARACTERS ── */
 #s-chars{background:radial-gradient(ellipse at 30% 50%,#00102a 0%,var(--bg) 65%);padding:14px 18px;gap:12px}
@@ -91,6 +68,7 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
 .scr-title{font-family:'Press Start 2P',monospace;font-size:clamp(9px,1.8vw,14px);color:var(--blue);text-shadow:0 0 18px rgba(0,212,255,.4)}
 .scr-sub{font-size:15px;color:#666;margin-top:3px}
 .char-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:600px){.char-grid{grid-template-columns:repeat(2,1fr)}}
 .char-card{border:2px solid rgba(0,212,255,.25);background:rgba(0,8,20,.95);padding:14px;cursor:none;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:7px}
 .char-card:hover{border-color:var(--blue);transform:scale(1.04)}
 .char-card.sel{border-color:var(--gold);box-shadow:0 0 18px var(--gold)}
@@ -111,6 +89,7 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
 #repair-op{font-size:15px;color:#777;margin-top:3px}
 #repair-timer{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--red);margin-left:auto}
 .repair-body{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;min-height:0}
+@media(max-width:700px){.repair-body{grid-template-columns:1fr}}
 .glitch-list{padding:14px;display:flex;flex-direction:column;gap:0;overflow-y:auto}
 .glist-title{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--purple);margin-bottom:10px}
 .g-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border:1px solid rgba(191,0,255,.25);cursor:none;transition:all .15s;background:rgba(191,0,255,.02);margin-bottom:6px}
@@ -141,6 +120,7 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
 /* ── STATUS ── */
 #s-status{background:radial-gradient(ellipse at 50% 80%,#001200 0%,var(--bg) 65%);padding:14px 18px;gap:12px}
 .status-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;min-height:0}
+@media(max-width:600px){.status-grid{grid-template-columns:1fr}}
 .stat-panel{padding:14px;display:flex;flex-direction:column;gap:0;overflow-y:auto}
 .spanel-title{font-family:'Press Start 2P',monospace;font-size:8px;margin-bottom:10px}
 .metric-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:15px}
@@ -162,6 +142,9 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
 #v-sub{font-family:'Press Start 2P',monospace;font-size:clamp(7px,1.3vw,11px);color:var(--green);text-align:center;line-height:2.2}
 #v-score{font-family:'Press Start 2P',monospace;font-size:clamp(11px,2vw,20px);color:var(--red);text-align:center}
 #v-ralph{width:180px;filter:drop-shadow(0 0 22px rgba(255,215,0,.8));animation:float 1.5s ease-in-out infinite}
+#v-submit-box{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+.v-name-input{font-family:'Press Start 2P',monospace;font-size:8px;background:#000;border:2px solid var(--gold);color:var(--gold);padding:8px 12px;outline:none;cursor:none;width:200px}
+.v-name-input:focus{box-shadow:0 0 10px var(--gold)}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:99979;overflow:hidden}
 .cp{position:absolute;width:9px;height:9px;animation:confettiFall linear forwards}
 .brick{position:fixed;width:13px;height:13px;pointer-events:none;z-index:99970;image-rendering:pixelated;animation:brickFall .9s ease forwards}
@@ -174,16 +157,16 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
 <div id="pixelgrid"></div>
 <div id="glitch-overlay"></div>
 
+<!-- STABILITY HUD -->
 <div id="stab-hud">
   <div class="stab-label">SYS STABILITY</div>
   <div class="stab-track"><div class="stab-fill" id="stab-fill"></div></div>
   <div id="stab-pct">73%</div>
 </div>
 
-<!-- VICTORY -->
+<!-- VICTORY SCREEN -->
 <div id="victory">
   <div id="confetti"></div>
-  <!-- Ralph happy SVG - pixel art style -->
   <svg id="v-ralph" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
     <rect x="58" y="125" width="84" height="105" rx="10" fill="#c0392b"/>
     <rect x="72" y="127" width="56" height="55" rx="4" fill="#2471a3"/>
@@ -197,23 +180,17 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
     <circle cx="119" cy="94" r="2" fill="#000"/>
     <ellipse cx="100" cy="108" rx="7" ry="5" fill="#c9906e"/>
     <path d="M84 118 Q100 132 116 118" stroke="#7b241c" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <!-- Left arm raised thumbs up -->
     <rect x="4" y="90" width="48" height="32" rx="12" fill="#e59866" transform="rotate(-35,28,106)"/>
     <ellipse cx="14" cy="68" rx="9" ry="13" fill="#e59866"/>
-    <!-- Right arm -->
     <rect x="148" y="128" width="44" height="32" rx="12" fill="#e59866"/>
-    <!-- Legs -->
     <rect x="65" y="225" width="28" height="46" rx="8" fill="#6e2c00"/>
     <rect x="107" y="225" width="28" height="46" rx="8" fill="#6e2c00"/>
     <ellipse cx="79" cy="273" rx="19" ry="9" fill="#2c1a00"/>
     <ellipse cx="121" cy="273" rx="19" ry="9" fill="#2c1a00"/>
-    <!-- Straps -->
     <rect x="74" y="126" width="9" height="22" rx="4" fill="#2471a3"/>
     <rect x="117" y="126" width="9" height="22" rx="4" fill="#2471a3"/>
-    <!-- Medal -->
     <circle cx="100" cy="172" r="11" fill="#f1c40f"/>
     <text x="100" y="177" text-anchor="middle" font-size="11" fill="#8b6914">★</text>
-    <!-- Stars around -->
     <text x="30" y="50" font-size="18" fill="#f1c40f" opacity=".8">★</text>
     <text x="160" y="40" font-size="14" fill="#f1c40f" opacity=".7">★</text>
     <text x="170" y="150" font-size="12" fill="#f1c40f" opacity=".6">★</text>
@@ -221,51 +198,44 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
   <h1>🏆 GAME FIXED! 🏆</h1>
   <div id="v-sub">ALL GLITCHES REPAIRED!<br>FIX-IT FELIX APPROVES.<br>RALPH HAS BEEN… RELOCATED.</div>
   <div id="v-score">SCORE: 0</div>
+  <div id="v-submit-box">
+    <input class="v-name-input" id="v-name" placeholder="ENTER YOUR NAME" maxlength="12">
+    <button class="px-btn blue" onclick="saveToLeaderboard()" style="font-size:7px;padding:8px 14px">💾 SAVE SCORE</button>
+  </div>
   <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:6px">
     <button class="px-btn grn" onclick="playAgain()">▶ PLAY AGAIN</button>
     <button class="px-btn"     onclick="goStatus()">📊 FULL REPORT</button>
+    <a class="px-btn" href="pages/leaderboard.html">🏆 LEADERBOARD</a>
   </div>
 </div>
 
 <!-- ═══════════════ SCREEN 1: BOOT ═══════════════ -->
 <div class="screen active" id="s-boot">
-  <!-- Wreck-It Ralph pixel SVG character -->
   <svg id="boot-ralph" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
-    <!-- Body / overalls -->
     <rect x="58" y="125" width="84" height="105" rx="10" fill="#c0392b"/>
     <rect x="72" y="127" width="56" height="55" rx="4" fill="#2471a3"/>
-    <!-- Head -->
     <ellipse cx="100" cy="100" rx="46" ry="43" fill="#e59866"/>
-    <!-- Hair (messy brown) -->
     <ellipse cx="100" cy="65" rx="42" ry="16" fill="#784212"/>
     <ellipse cx="72"  cy="70" rx="14" ry="10" fill="#784212"/>
     <ellipse cx="128" cy="70" rx="14" ry="10" fill="#784212"/>
-    <!-- Eyes -->
     <ellipse cx="85" cy="94" rx="9" ry="10" fill="#fff"/>
     <ellipse cx="115" cy="94" rx="9" ry="10" fill="#fff"/>
     <circle cx="87" cy="96" r="5" fill="#1a5276"/>
     <circle cx="117" cy="96" r="5" fill="#1a5276"/>
     <circle cx="89" cy="94" r="2" fill="#000"/>
     <circle cx="119" cy="94" r="2" fill="#000"/>
-    <!-- Nose -->
     <ellipse cx="100" cy="108" rx="7" ry="5" fill="#c9906e"/>
-    <!-- Grumpy mouth -->
     <path d="M86 120 Q100 113 114 120" stroke="#7b241c" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <!-- Big fists raised (angry pose) -->
     <rect x="-2" y="115" width="54" height="34" rx="14" fill="#e59866" transform="rotate(-22,25,132)"/>
     <ellipse cx="4"  cy="98" rx="16" ry="14" fill="#e59866"/>
     <rect x="148" y="115" width="54" height="34" rx="14" fill="#e59866" transform="rotate(22,175,132)"/>
     <ellipse cx="196" cy="98" rx="16" ry="14" fill="#e59866"/>
-    <!-- Legs -->
     <rect x="65" y="225" width="28" height="46" rx="8" fill="#6e2c00"/>
     <rect x="107" y="225" width="28" height="46" rx="8" fill="#6e2c00"/>
-    <!-- Shoes -->
     <ellipse cx="79"  cy="273" rx="19" ry="9" fill="#2c1a00"/>
     <ellipse cx="121" cy="273" rx="19" ry="9" fill="#2c1a00"/>
-    <!-- Straps -->
     <rect x="74"  y="126" width="9" height="22" rx="4" fill="#2471a3"/>
     <rect x="117" y="126" width="9" height="22" rx="4" fill="#2471a3"/>
-    <!-- Ralph name tag on chest -->
     <rect x="78" y="148" width="44" height="16" rx="3" fill="#fff" opacity=".9"/>
     <text x="100" y="160" text-anchor="middle" font-family="monospace" font-size="9" fill="#c0392b" font-weight="bold">RALPH</text>
   </svg>
@@ -281,12 +251,21 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
     <div id="boot-pct">0%</div>
     <div id="boot-warn">⚠ RALPH DETECTED IN SYSTEM<br>STRUCTURAL INTEGRITY: COMPROMISED<br>(ARE WE SURE WE WANT TO BOOT?)</div>
     <div id="boot-enter" onclick="enterSystem()">▶ CLICK ANYWHERE TO ENTER ◀</div>
+    <div class="boot-nav-hint">NEW HERE? <a href="pages/how-to-play.html" style="color:var(--gold);text-decoration:none">READ THE HOW TO PLAY GUIDE →</a></div>
   </div>
 </div>
 
 <!-- ═══════════════ SCREEN 2: GAME SELECT ═══════════════ -->
 <div class="screen" id="s-games">
-  <!-- Faded Ralph silhouette background -->
+  <div class="ticker-inside ticker-bar">
+    <span class="ticker-inner">
+      ⚡ WELCOME TO GAME CENTRAL STATION OS &nbsp;•&nbsp; 🏠 FIX-IT FELIX JR — RALPH DETECTED &nbsp;•&nbsp;
+      🔫 HERO'S DUTY — ONLINE &nbsp;•&nbsp; 🍭 SUGAR RUSH — OFFLINE &nbsp;•&nbsp;
+      ⚠ SYSTEM STABILITY: DROPPING &nbsp;•&nbsp; 💥 DO NOT LET RALPH WIN &nbsp;•&nbsp;
+      📖 NEW? CHECK THE HOW TO PLAY PAGE &nbsp;&nbsp;&nbsp;
+    </span>
+  </div>
+
   <svg id="gs-ralph" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
     <rect x="58" y="125" width="84" height="105" rx="10" fill="#c0392b"/>
     <rect x="72" y="127" width="56" height="55" rx="4" fill="#2471a3"/>
@@ -305,20 +284,33 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
     <ellipse cx="121" cy="273" rx="19" ry="9" fill="#2c1a00"/>
   </svg>
 
-  <div class="gs-topbar">
-    <div class="gs-left">
-      <h1 class="gt" data-t="GAME CENTRAL STATION">GAME CENTRAL STATION</h1>
-      <p>SELECT A GAME — RALPH IS LOOSE. ACT FAST.</p>
+  <div class="gs-main">
+    <div class="gs-topbar">
+      <div class="gs-left">
+        <h1 class="gt" data-t="GAME CENTRAL STATION">GAME CENTRAL STATION</h1>
+        <p>SELECT A GAME — RALPH IS LOOSE. ACT FAST.</p>
+      </div>
+      <div class="gs-nav">
+        <button class="nav-tab on">🎮 GAMES</button>
+        <button class="nav-tab" onclick="goScreen('s-status')">📊 STATUS</button>
+        <button class="nav-tab" onclick="doEmergency()">⚡ EMERGENCY</button>
+        <a class="nav-tab" href="pages/how-to-play.html">📖 HOW TO PLAY</a>
+        <a class="nav-tab" href="pages/leaderboard.html">🏆 LEADERBOARD</a>
+        <a class="nav-tab" href="pages/about.html">ℹ ABOUT</a>
+      </div>
     </div>
-    <div class="gs-nav">
-      <button class="nav-tab on">🎮 GAMES</button>
-      <button class="nav-tab" onclick="goScreen('s-status')">📊 STATUS</button>
-      <button class="nav-tab" onclick="doEmergency()">⚡ EMERGENCY</button>
+
+    <!-- BEGINNER HINT BAR -->
+    <div id="hint-bar" style="background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.3);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <span style="font-family:'Press Start 2P',monospace;font-size:6px;color:var(--blue)">💡 HOW TO PLAY: Click a game card → Pick a character → Type repair codes → Fix all glitches → WIN!</span>
+      <button onclick="document.getElementById('hint-bar').style.display='none'" style="font-family:'Press Start 2P',monospace;font-size:6px;color:var(--blue);background:transparent;border:1px solid var(--blue);padding:4px 8px;cursor:none">✕ DISMISS</button>
+    </div>
+
+    <div class="games-grid" id="games-grid"></div>
+    <div style="display:flex;justify-content:flex-end">
+      <button class="px-btn red" id="emergency-btn" onclick="doEmergency()">⚡ EMERGENCY GAME JUMP</button>
     </div>
   </div>
-
-  <div class="games-grid" id="games-grid"></div>
-  <button class="px-btn red" id="emergency-btn" onclick="doEmergency()">⚡ EMERGENCY GAME JUMP</button>
 </div>
 
 <!-- ═══════════════ SCREEN 3: CHARACTERS ═══════════════ -->
@@ -330,10 +322,14 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
       <div class="scr-sub" id="char-sub">GAME: —</div>
     </div>
   </div>
+  <!-- Instruction hint -->
+  <div style="background:rgba(255,215,0,0.04);border:1px solid rgba(255,215,0,0.2);padding:8px 14px;font-family:'Press Start 2P',monospace;font-size:6px;color:rgba(255,215,0,0.6);line-height:2">
+    ⬆ SELECT A TECHNICIAN TO SEND ON THE REPAIR MISSION. AVOID RALPH — HE MAKES THINGS WORSE!
+  </div>
   <div class="char-grid" id="char-grid"></div>
   <div class="detail-box panel" id="detail-box">
     <div class="detail-title" id="detail-title">👆 SELECT A CHARACTER ABOVE</div>
-    <div class="detail-text" id="detail-text">Click any character to view their status and deploy them on a repair mission.</div>
+    <div class="detail-text" id="detail-text">Click any character to view their status and deploy them on a repair mission. Each character has unique traits — choose wisely!</div>
   </div>
   <div class="char-footer">
     <button class="px-btn" onclick="goScreen('s-games')">◀ GAMES</button>
@@ -350,6 +346,10 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
       <div id="repair-op">OPERATOR: —</div>
     </div>
     <div id="repair-timer">TIME: 00:00</div>
+  </div>
+  <!-- Instructions row -->
+  <div style="background:rgba(191,0,255,0.05);border:1px solid rgba(191,0,255,0.2);padding:8px 14px;font-family:'Press Start 2P',monospace;font-size:6px;color:rgba(191,0,255,0.7);line-height:2;flex-shrink:0">
+    1. CLICK A GLITCH FROM THE LEFT LIST &nbsp;→&nbsp; 2. READ THE HINT &nbsp;→&nbsp; 3. TYPE THE CODE &nbsp;→&nbsp; 4. PRESS ENTER &nbsp;→&nbsp; 5. FIX ALL TO WIN!
   </div>
   <div class="repair-body">
     <div class="glitch-list panel">
@@ -389,7 +389,8 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
       <div class="metric-row"><span class="m-label">GAMES ONLINE</span><span class="m-val gld">2 / 3</span></div>
       <div class="metric-row"><span class="m-label">VANELLOPE STATUS</span><span class="m-val blu">GLITCHING</span></div>
       <div class="metric-row"><span class="m-label">UPTIME</span><span class="m-val grn" id="m-uptime">0:00:00</span></div>
-      <div class="metric-row"><span class="m-label">SCORE</span><span class="m-val gld" id="m-score">0</span></div>
+      <div class="metric-row"><span class="m-label">CURRENT SCORE</span><span class="m-val gld" id="m-score">0</span></div>
+      <div class="metric-row"><span class="m-label">STABILITY</span><span class="m-val grn" id="m-stab">73%</span></div>
     </div>
     <div class="stat-panel panel">
       <div class="spanel-title" style="color:var(--blue)">📋 SYSTEM LOG</div>
@@ -402,6 +403,7 @@ body:active #cursor{transform:translate(-50%,-50%) scale(.75) rotate(-25deg)}
         <button class="px-btn grn" onclick="doFinish()">▶ RESTART GAME</button>
         <button class="px-btn"     onclick="goScreen('s-repair')">◀ REPAIR</button>
         <button class="px-btn red" onclick="doRalph()">💥 SUMMON RALPH</button>
+        <a class="px-btn" href="pages/leaderboard.html">🏆 LEADERBOARD</a>
       </div>
     </div>
   </div>
@@ -420,10 +422,10 @@ let S={stability:73,game:null,char:null,glitches:[],fixed:0,ralphHits:0,score:0,
 const GAMES=[
   {id:'felix',name:"FIX-IT FELIX JR.",icon:'🏠',status:'glitch',stText:'⚠ RALPH DETECTED',desc:'Classic fix-it game. Under attack. Again.',ralph:true,
    chars:[
-    {n:'FIX-IT FELIX',e:'🔨',role:'Hero',stat:'HAMMER: 94%',detail:"Status: FIXING EVERYTHING. Hammer Charge: 94%. Mood: Earnestly Optimistic. Has said 'I can fix it!' 47 times today."},
-    {n:'WRECK-IT RALPH',e:'👊',role:'Villain',stat:'DAMAGE: MAX',isRalph:true,detail:"⚠ ALERT ⚠ Status: GOING ROGUE. Damage Level: CATASTROPHIC. Things broken: 23. Things fixed: 0. RECOMMEND CONTAINMENT IMMEDIATELY."},
-    {n:'SGT. CALHOUN',e:'💂',role:'Commander',stat:'THREAT: MAX',detail:"Status: HUNTING CY-BUGS. Currently yelling at someone. Cy-Bug kills today: 847. Mood: Professionally Furious."},
-    {n:'VANELLOPE',e:'🏎️',role:'Glitch',stat:'GLITCH: 60%',detail:"Status: PHASING THROUGH 3 WALLS SIMULTANEOUSLY. Mood: Aggressively Cheerful despite being literally broken at a molecular level."}
+    {n:'FIX-IT FELIX',e:'🔨',role:'Hero / Best Repair Tech',stat:'HAMMER: 94%',detail:"Status: FIXING EVERYTHING. Hammer Charge: 94%. Mood: Earnestly Optimistic. Has said 'I can fix it!' 47 times today. RECOMMENDED for this mission."},
+    {n:'WRECK-IT RALPH',e:'👊',role:'Villain — DO NOT SELECT',stat:'DAMAGE: MAX',isRalph:true,detail:"⚠ ALERT ⚠ Status: GOING ROGUE. Damage Level: CATASTROPHIC. Things broken: 23. Things fixed: 0. Selecting Ralph will DESTROY system integrity! RECOMMEND CONTAINMENT IMMEDIATELY."},
+    {n:'SGT. CALHOUN',e:'💂',role:'Commander',stat:'THREAT: MAX',detail:"Status: HUNTING CY-BUGS. Currently yelling at someone. Cy-Bug kills today: 847. Mood: Professionally Furious. Effective repair tech despite the attitude."},
+    {n:'VANELLOPE',e:'🏎️',role:'Glitch Specialist',stat:'GLITCH: 60%',detail:"Status: PHASING THROUGH 3 WALLS SIMULTANEOUSLY. Mood: Aggressively Cheerful. She understands glitches because she IS one — great for glitch repair!"}
    ],
    glitches:[
     {desc:"Ralph's muddy footprints across 5 levels",sev:'crit',code:'CLEANUP',pts:300},
@@ -434,10 +436,10 @@ const GAMES=[
   },
   {id:'duty',name:"HERO'S DUTY",icon:'🔫',status:'run',stText:'✓ ONLINE',desc:"First-person shooter. Cy-Bugs contained. For now.",ralph:false,
    chars:[
-    {n:'CALHOUN',e:'💂',role:'Lead',stat:'AMMO: 847',detail:"Cy-Bug kills today: 847. Unauthorized detentions: 1 (Ralph, who left immediately). Mood: Excellent and terrifying."},
-    {n:'CY-BUG #4471',e:'🪲',role:'Enemy',stat:'THREAT: ACTIVE',detail:"Status: ESCAPED CONTAINMENT. Getting smarter with each power-up consumed. We are mildly panicking."},
-    {n:'SOLDIER NPC',e:'🪖',role:'Support',stat:'HP: 100',detail:"Has been standing in the same spot for 4 hours. Experiencing existential crisis: 12%. Still reporting for duty."},
-    {n:'THE MEDAL',e:'🏅',role:'Objective',stat:'SECURED: YES',detail:"Was briefly stolen by a large brick-handed man. Recovered. Now bolted to wall with 6 inch steel bolts."}
+    {n:'CALHOUN',e:'💂',role:'Lead Commander',stat:'AMMO: 847',detail:"Cy-Bug kills today: 847. Unauthorized detentions: 1 (Ralph). Mood: Excellent and terrifying. Best repair tech for Hero's Duty."},
+    {n:'CY-BUG #4471',e:'🪲',role:'Escaped Enemy',stat:'THREAT: ACTIVE',detail:"Status: ESCAPED CONTAINMENT. Getting smarter with each power-up consumed. Cannot be selected for repairs — it IS the problem!"},
+    {n:'SOLDIER NPC',e:'🪖',role:'Support Unit',stat:'HP: 100',detail:"Has been standing in the same spot for 4 hours. Existential crisis: 12%. Still reporting for duty. Reliable repair assistant."},
+    {n:'THE MEDAL',e:'🏅',role:'Mission Objective',stat:'SECURED: YES',detail:"Was briefly stolen by a large brick-handed man. Recovered. Now bolted to wall with 6 inch steel bolts. Inspirational object only — cannot repair."}
    ],
    glitches:[
     {desc:"Cy-Bug escaped containment grid",sev:'crit',code:'CONTAIN',pts:300},
@@ -447,10 +449,10 @@ const GAMES=[
   },
   {id:'sugar',name:"SUGAR RUSH",icon:'🍭',status:'off',stText:'✗ OFFLINE',desc:"Racing game. Power cable unplugged. Blame Ralph.",ralph:false,
    chars:[
-    {n:'VANELLOPE',e:'🏎️',role:'Racer',stat:'OFFLINE',detail:"Last race: 1st place, mid-glitch. Current mood: 'Whatever I don't care.' (She cares enormously.)"},
-    {n:'KING CANDY',e:'👑',role:'Villain',stat:'DELETED',detail:"Status: PERMANENTLY DELETED. Was actually Turbo the whole time. The more you know. Gone forever. Presumably."},
-    {n:'TAFFYTA M.',e:'🍋',role:'Rival',stat:'WINS: 14',detail:"Sportsmanship rating: 2/100. Win rate: 78%. Improvement suggestions: everything about her personality."},
-    {n:'JUBILEENA',e:'🍒',role:'Background Racer',stat:'EXISTS: YES',detail:"Has competed in 23 races. No one remembers her. She is fine with this. Cherry-themed car: operational. Spirit: unbroken."}
+    {n:'VANELLOPE',e:'🏎️',role:'Star Racer',stat:'OFFLINE',detail:"Last race: 1st place, mid-glitch. Current mood: 'Whatever I don't care.' (She cares enormously.) Best tech for Sugar Rush."},
+    {n:'KING CANDY',e:'👑',role:'DELETED',stat:'DELETED',detail:"Status: PERMANENTLY DELETED. Was actually Turbo the whole time. Gone forever. Presumably."},
+    {n:'TAFFYTA M.',e:'🍋',role:'Rival Racer',stat:'WINS: 14',detail:"Sportsmanship rating: 2/100. Win rate: 78%. Cherry-themed car: operational. Can assist with candy-related repairs."},
+    {n:'JUBILEENA',e:'🍒',role:'Background Racer',stat:'EXISTS: YES',detail:"Has competed in 23 races. No one remembers her. She is fine with this. Cherry-themed car: operational. Spirit: unbroken. Solid repair tech!"}
    ],
    glitches:[
     {desc:"Power cable unplugged (Ralph, probably)",sev:'crit',code:'RECONNECT',pts:300},
@@ -466,7 +468,7 @@ function shakeBody(){document.body.style.animation='shake .35s ease';setTimeout(
 function goScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');doGlitch()}
 function addLog(type,msg){const list=document.getElementById('log-list');const ts=new Date().toLocaleTimeString('en',{hour12:false});const d=document.createElement('div');d.className='le le-'+type;d.textContent='['+ts+'] '+msg;list.appendChild(d);list.scrollTop=list.scrollHeight}
 function tPrint(text,color='var(--green)'){const t=document.getElementById('terminal');const d=document.createElement('div');d.className='t-line';d.style.color=color;d.textContent=text;t.appendChild(d);t.scrollTop=t.scrollHeight}
-function updateMetrics(){document.getElementById('m-ralph').textContent=S.ralphHits;document.getElementById('m-fixed').textContent=S.fixed;document.getElementById('m-score').textContent=S.score}
+function updateMetrics(){document.getElementById('m-ralph').textContent=S.ralphHits;document.getElementById('m-fixed').textContent=S.fixed;document.getElementById('m-score').textContent=S.score;document.getElementById('m-stab').textContent=Math.round(S.stability)+'%';document.getElementById('m-stab').className='m-val '+(S.stability>50?'grn':S.stability>25?'gld':'red')}
 
 // ── BRICKS ──
 function bricks(){const cols=['#8B4513','#A0522D','#CD853F','#D2691E','#8B0000'];for(let i=0;i<18;i++)setTimeout(()=>{const p=document.createElement('div');p.className='brick';p.style.cssText=`background:${cols[~~(Math.random()*cols.length)]};left:${15+Math.random()*70}vw;top:${5+Math.random()*50}vh;--tx:${(Math.random()-.5)*280}px;--ty:${50+Math.random()*200}px;--rot:${Math.random()*400}deg`;document.body.appendChild(p);setTimeout(()=>p.remove(),920)},i*28)}
@@ -491,53 +493,87 @@ function runBoot(){
   },90);
 }
 
-function enterSystem(){doGlitch();setTimeout(()=>{goScreen('s-games');document.getElementById('stab-hud').style.display='flex';S.startMs=Date.now();populateGames();startStab();startTimer();addLog('info','System boot complete. Welcome to Game Central Station.');addLog('warn','Ralph detected on premises. Stay alert.')},380)}
+function enterSystem(){doGlitch();setTimeout(()=>{goScreen('s-games');document.getElementById('stab-hud').style.display='flex';S.startMs=Date.now();populateGames();startStab();startTimer();addLog('info','System boot complete. Welcome to Game Central Station.');addLog('warn','Ralph detected on premises. Stay alert.');addLog('info','TIP: Click a game card to start. Need help? Visit How To Play.')},380)}
 document.getElementById('s-boot').addEventListener('click',()=>{if(bp>=100)enterSystem()});
 
 // ── GAMES GRID ──
-function populateGames(){const grid=document.getElementById('games-grid');grid.innerHTML='';GAMES.forEach(g=>{const d=document.createElement('div');d.className='game-card'+(g.status==='glitch'?' shaking':'');d.innerHTML=`<div class="card-icon">${g.icon}</div><div class="card-name">${g.name}</div><div class="card-status s-${g.status==='glitch'?'glitch':g.status==='run'?'run':'off'}">${g.stText}</div><div class="card-desc">${g.desc}</div>${g.ralph?'<div class="ralph-badge">⚠ RALPH ACTIVE ⚠</div>':''}`;d.addEventListener('click',()=>selectGame(g));grid.appendChild(d)})}
+function populateGames(){const grid=document.getElementById('games-grid');grid.innerHTML='';GAMES.forEach(g=>{const d=document.createElement('div');d.className='game-card shine-card'+(g.status==='glitch'?' shaking':'');d.innerHTML=`<div class="card-icon">${g.icon}</div><div class="card-name">${g.name}</div><div class="card-status s-${g.status==='glitch'?'glitch':g.status==='run'?'run':'off'}">${g.stText}</div><div class="card-desc">${g.desc}</div>${g.ralph?'<div class="ralph-badge">⚠ RALPH ACTIVE ⚠</div>':''}`;d.addEventListener('click',()=>selectGame(g));grid.appendChild(d)})}
 
 // ── SELECT GAME ──
 function selectGame(g){S.game=g;document.getElementById('char-title').textContent='CHARACTER CONTROL PANEL';document.getElementById('char-sub').textContent='GAME: '+g.name;populateChars(g);goScreen('s-chars');addLog('info','Accessed '+g.name+' character panel.')}
 
 // ── CHARS ──
-function populateChars(g){const grid=document.getElementById('char-grid');grid.innerHTML='';g.chars.forEach(ch=>{const d=document.createElement('div');d.className='char-card'+(ch.isRalph?' ralph-card':'');d.innerHTML=`<div class="char-emoji">${ch.e}</div><div class="char-name">${ch.n}</div><div class="char-role">${ch.role}</div><div class="char-stat">${ch.stat}</div>`;d.addEventListener('click',()=>selectChar(ch,d));grid.appendChild(d)})}
-function selectChar(ch,el){document.querySelectorAll('.char-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');S.char=ch;document.getElementById('detail-title').textContent='▶ '+ch.n+' — STATUS';document.getElementById('detail-text').textContent=ch.detail;document.getElementById('proceed-btn').disabled=false;if(ch.isRalph){shakeBody();doGlitch();bricks();S.stability=Math.max(5,S.stability-15);S.ralphHits++;updateMetrics();addLog('error','RALPH SELECTED! System integrity dropping!')}else{addLog('info','Character selected: '+ch.n)}}
+function populateChars(g){const grid=document.getElementById('char-grid');grid.innerHTML='';g.chars.forEach(ch=>{const d=document.createElement('div');d.className='char-card shine-card'+(ch.isRalph?' ralph-card':'');d.innerHTML=`<div class="char-emoji">${ch.e}</div><div class="char-name">${ch.n}</div><div class="char-role">${ch.role}</div><div class="char-stat">${ch.stat}</div>`;d.addEventListener('click',()=>selectChar(ch,d));grid.appendChild(d)})}
+
+function selectChar(ch,el){document.querySelectorAll('.char-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');S.char=ch;document.getElementById('detail-title').textContent='▶ '+ch.n+' — STATUS';document.getElementById('detail-text').textContent=ch.detail;document.getElementById('proceed-btn').disabled=false;if(ch.isRalph){shakeBody();doGlitch();bricks();S.stability=Math.max(5,S.stability-15);S.ralphHits++;updateMetrics();addLog('error','⚠ RALPH SELECTED! System integrity dropping! Select someone else!')}else{addLog('info','Character selected: '+ch.n+'. Click GLITCH REPAIR to continue.')}}
 
 // ── REPAIR INIT ──
-function goRepair(){if(!S.char)return;S.glitches=S.game.glitches.map(g=>({...g,fixed:false}));S.fixed=0;S.score=0;S.autoLeft=3;document.getElementById('repair-op').textContent='OPERATOR: '+S.char.n;document.getElementById('auto-btn').textContent='🤖 AUTO REPAIR (x3)';document.getElementById('auto-btn').disabled=false;document.getElementById('finish-btn').style.display='none';document.getElementById('terminal').innerHTML='';document.getElementById('minigame').classList.remove('show');renderGList();updateProg();goScreen('s-repair');addLog('info','Repair initiated by '+S.char.n+'.');tPrint('GAME CENTRAL STATION — REPAIR SYSTEM v2.4.1','var(--gold)');tPrint('Select a glitch from the list to begin…','#666')}
+function goRepair(){if(!S.char)return;S.glitches=S.game.glitches.map(g=>({...g,fixed:false}));S.autoLeft=3;document.getElementById('repair-op').textContent='OPERATOR: '+S.char.n+' | GAME: '+S.game.name;document.getElementById('auto-btn').textContent='🤖 AUTO REPAIR (x3)';document.getElementById('auto-btn').disabled=false;document.getElementById('finish-btn').style.display='none';document.getElementById('terminal').innerHTML='';document.getElementById('minigame').classList.remove('show');renderGList();updateProg();goScreen('s-repair');addLog('info','Repair initiated by '+S.char.n+'.');tPrint('══════════════════════════════════','var(--gold)');tPrint('  GAME CENTRAL STATION REPAIR v2.4','var(--gold)');tPrint('══════════════════════════════════','var(--gold)');tPrint('OPERATOR: '+S.char.n,'var(--blue)');tPrint('GAME: '+S.game.name,'var(--blue)');tPrint('GLITCHES FOUND: '+S.glitches.length,'var(--red)');tPrint('─────────────────────────────────','#333');tPrint('▶ Click a glitch from the list to begin…','#666')}
 
 // ── GLITCH LIST ──
 function renderGList(){const c=document.getElementById('glitch-items');c.innerHTML='';S.glitches.forEach((g,i)=>{const d=document.createElement('div');d.className='g-item'+(g.fixed?' g-fixed':'');d.id='gi'+i;d.innerHTML=`<span class="g-sev sev-${g.sev}">${g.sev.toUpperCase()}</span><span class="g-desc">${g.desc}</span><span class="g-icon">${g.fixed?'✅':'🔴'}</span>`;if(!g.fixed)d.addEventListener('click',()=>startRepair(i));c.appendChild(d)})}
 
 // ── START REPAIR ──
-function startRepair(idx){if(S.glitches[idx].fixed)return;S.curIdx=idx;const g=S.glitches[idx];document.querySelectorAll('.g-item').forEach(x=>x.classList.remove('g-active'));const el=document.getElementById('gi'+idx);if(el)el.classList.add('g-active');document.getElementById('terminal').innerHTML='';tPrint('> REPAIR SEQUENCE #'+(idx+1),'var(--gold)');tPrint('> TYPE: '+g.sev.toUpperCase()+(g.sev==='crit'?' ⚠':''),'var(--red)');tPrint('> '+g.desc,'#ccc');tPrint('> ANALYZING…','var(--purple)');setTimeout(()=>{tPrint('> ENTER REPAIR CODE BELOW:','var(--green)');doGlitch();showMG(g,idx)},700)}
+function startRepair(idx){if(S.glitches[idx].fixed)return;S.curIdx=idx;const g=S.glitches[idx];document.querySelectorAll('.g-item').forEach(x=>x.classList.remove('g-active'));const el=document.getElementById('gi'+idx);if(el)el.classList.add('g-active');document.getElementById('terminal').innerHTML='';tPrint('══ REPAIR SEQUENCE #'+(idx+1)+' ══','var(--gold)');tPrint('SEVERITY: '+g.sev.toUpperCase()+(g.sev==='crit'?' ⚠ CRITICAL':''),'var(--red)');tPrint('ISSUE: '+g.desc,'#ccc');tPrint('','');tPrint('ANALYZING GLITCH…','var(--purple)');setTimeout(()=>{tPrint('ANALYSIS COMPLETE.','var(--purple)');tPrint('ENTER REPAIR CODE BELOW TO FIX:','var(--green)');doGlitch();showMG(g,idx)},700)}
 
 // ── MINIGAME ──
-function showMG(g,idx){const box=document.getElementById('minigame'),cf=document.getElementById('code-field');document.getElementById('mg-title').textContent='🎯 REPAIR CHALLENGE — '+g.sev.toUpperCase();document.getElementById('mg-desc').textContent='Fix: "'+g.desc+'"';document.getElementById('mg-hint').textContent='HINT: Type the code → '+g.code;cf.value='';cf.placeholder='TYPE THE REPAIR CODE…';box.classList.add('show');cf.focus();cf.onkeydown=null;cf.onkeydown=e=>{if(e.key!=='Enter')return;const v=cf.value.trim().toUpperCase();if(v===g.code){fixGlitch(idx)}else{doGlitch();shakeBody();tPrint('> WRONG: "'+v+'" — RALPH LAUGHS.','var(--red)');cf.value='';cf.style.borderColor='var(--red)';S.stability=Math.max(5,S.stability-3);setTimeout(()=>cf.style.borderColor='var(--green)',500)}}}
+function showMG(g,idx){const box=document.getElementById('minigame'),cf=document.getElementById('code-field');document.getElementById('mg-title').textContent='🎯 REPAIR CHALLENGE — '+g.sev.toUpperCase()+' SEVERITY';document.getElementById('mg-desc').textContent='Fix: "'+g.desc+'"';document.getElementById('mg-hint').textContent='▶ HINT: Type the code → '+g.code+' ← then press ENTER';cf.value='';cf.placeholder='TYPE THE REPAIR CODE AND PRESS ENTER…';box.classList.add('show');cf.focus();cf.onkeydown=null;cf.onkeydown=e=>{if(e.key!=='Enter')return;const v=cf.value.trim().toUpperCase();if(v===g.code){fixGlitch(idx)}else{doGlitch();shakeBody();tPrint('✗ WRONG CODE: "'+v+'" — Try again!','var(--red)');cf.value='';cf.style.borderColor='var(--red)';S.stability=Math.max(5,S.stability-3);addLog('warn','Wrong code entered. Stability -3%.');setTimeout(()=>cf.style.borderColor='var(--green)',500)}}}
 
 // ── FIX GLITCH ──
-function fixGlitch(idx){S.glitches[idx].fixed=true;S.fixed++;const pts=S.glitches[idx].pts;S.score+=pts;S.stability=Math.min(100,S.stability+8);document.getElementById('minigame').classList.remove('show');tPrint('> ✅ REPAIRED! +'+pts+' SCORE','var(--green)');tPrint('> '+S.fixed+'/'+S.glitches.length+' GLITCHES FIXED','var(--blue)');addLog('success','Repaired: '+S.glitches[idx].desc.slice(0,40)+'…');renderGList();updateProg();updateMetrics();if(S.fixed>=S.glitches.length)setTimeout(()=>{tPrint('> 🏆 ALL GLITCHES FIXED! GAME RESTART READY!','var(--gold)');document.getElementById('finish-btn').style.display='inline-block';addLog('success','ALL GLITCHES REPAIRED!')},500)}
+function fixGlitch(idx){S.glitches[idx].fixed=true;S.fixed++;const pts=S.glitches[idx].pts;S.score+=pts;S.stability=Math.min(100,S.stability+8);document.getElementById('minigame').classList.remove('show');tPrint('','');tPrint('✅ REPAIR SUCCESSFUL!','var(--green)');tPrint('+'+pts+' SCORE EARNED','var(--gold)');tPrint(S.fixed+'/'+S.glitches.length+' GLITCHES FIXED','var(--blue)');addLog('success','Repaired: '+S.glitches[idx].desc.slice(0,40)+'…');renderGList();updateProg();updateMetrics();if(S.fixed>=S.glitches.length)setTimeout(()=>{tPrint('','');tPrint('🏆 ALL GLITCHES FIXED!','var(--gold)');tPrint('CLICK "RESTART GAME" TO FINISH!','var(--gold)');document.getElementById('finish-btn').style.display='inline-block';addLog('success','ALL GLITCHES REPAIRED! Click Restart Game!')},500)}
 
 // ── PROGRESS ──
-function updateProg(){const pct=Math.round((S.fixed/Math.max(1,S.glitches.length))*100);document.getElementById('prog-fill').style.width=pct+'%';document.getElementById('prog-label').textContent='REPAIR PROGRESS: '+pct+'%'}
+function updateProg(){const pct=Math.round((S.fixed/Math.max(1,S.glitches.length))*100);document.getElementById('prog-fill').style.width=pct+'%';document.getElementById('prog-label').textContent='REPAIR PROGRESS: '+pct+'% ('+S.fixed+'/'+S.glitches.length+' FIXED)'}
 
 // ── AUTO REPAIR ──
-function doAuto(){if(S.autoLeft<=0)return;const i=S.glitches.findIndex(g=>!g.fixed);if(i===-1)return;S.autoLeft--;document.getElementById('auto-btn').textContent='🤖 AUTO REPAIR (x'+S.autoLeft+')';if(S.autoLeft===0)document.getElementById('auto-btn').disabled=true;document.getElementById('minigame').classList.remove('show');tPrint('> AUTO-REPAIR BOT DEPLOYED…','var(--blue)');S.curIdx=i;let p=0;const iv=setInterval(()=>{p+=8;if(p>=100){clearInterval(iv);fixGlitch(i)}},60);doGlitch()}
+function doAuto(){if(S.autoLeft<=0)return;const i=S.glitches.findIndex(g=>!g.fixed);if(i===-1){tPrint('All glitches already fixed!','var(--green)');return}S.autoLeft--;document.getElementById('auto-btn').textContent='🤖 AUTO REPAIR (x'+S.autoLeft+')';if(S.autoLeft===0)document.getElementById('auto-btn').disabled=true;document.getElementById('minigame').classList.remove('show');tPrint('🤖 AUTO-REPAIR BOT DEPLOYING…','var(--blue)');tPrint('Fixing: '+S.glitches[i].desc,'#aaa');S.curIdx=i;let p=0;const iv=setInterval(()=>{p+=8;if(p>=100){clearInterval(iv);fixGlitch(i)}},60);doGlitch();addLog('info','Auto-repair used. '+S.autoLeft+' remaining.')}
 
 // ── RALPH BUTTON ──
-function doRalph(){S.ralphHits++;S.stability=Math.max(5,S.stability-22);S.score=Math.max(0,S.score-150);bricks();shakeBody();doGlitch();addLog('error','💥 RALPH INCIDENT #'+S.ralphHits+'! -150 SCORE');tPrint('> 💥 RALPH HAS ENTERED THE BUILDING!','var(--red)');updateMetrics()}
+function doRalph(){S.ralphHits++;S.stability=Math.max(5,S.stability-22);S.score=Math.max(0,S.score-150);bricks();shakeBody();doGlitch();addLog('error','💥 RALPH INCIDENT #'+S.ralphHits+'! -150 SCORE. -22% STABILITY.');tPrint('💥 RALPH HAS ENTERED THE BUILDING!','var(--red)');tPrint('Score: -150 | Stability: -22%','var(--red)');updateMetrics()}
 
 // ── EMERGENCY ──
 function doEmergency(){doGlitch();shakeBody();const list=['s-games','s-status'];const c=document.querySelector('.screen.active').id;const n=list.find(x=>x!==c)||'s-games';setTimeout(()=>goScreen(n),300);addLog('warn','⚡ EMERGENCY JUMP!')}
 
 // ── FINISH ──
-function doFinish(){if(S.timerIv)clearInterval(S.timerIv);const el=Math.floor((Date.now()-S.startMs)/1000);const bonus=Math.max(0,600-el*2);S.score+=bonus;document.getElementById('v-score').textContent='FINAL SCORE: '+S.score+' (TIME BONUS: +'+bonus+')';addLog('success','GAME COMPLETE! Score: '+S.score);updateMetrics();document.getElementById('victory').classList.add('show');spawnConfetti()}
+function doFinish(){
+  if(S.timerIv)clearInterval(S.timerIv);
+  const el=Math.floor((Date.now()-S.startMs)/1000);
+  const bonus=Math.max(0,600-el*2);
+  S.score+=bonus;
+  const mm=String(Math.floor(el/60)).padStart(2,'0');
+  const ss=String(el%60).padStart(2,'0');
+  document.getElementById('v-score').textContent='FINAL SCORE: '+S.score+' pts  (TIME BONUS: +'+bonus+')';
+  document.getElementById('v-sub').innerHTML='ALL GLITCHES REPAIRED!<br>TIME: '+mm+':'+ss+'<br>FIX-IT FELIX APPROVES.';
+  addLog('success','GAME COMPLETE! Final Score: '+S.score);
+  updateMetrics();
+  document.getElementById('victory').classList.add('show');
+  spawnConfetti();
+  document.getElementById('v-name').value='';
+}
+
+// ── SAVE TO LEADERBOARD ──
+function saveToLeaderboard(){
+  const name=document.getElementById('v-name').value.trim().toUpperCase().replace(/[^A-Z0-9_]/g,'').slice(0,12);
+  if(!name){document.getElementById('v-name').focus();return;}
+  const el=Math.floor((Date.now()-S.startMs)/1000);
+  const mm=String(Math.floor(el/60)).padStart(2,'0');
+  const ss=String(el%60).padStart(2,'0');
+  try {
+    const existing=JSON.parse(localStorage.getItem('gcs_scores')||'[]');
+    existing.push({name,score:S.score,time:mm+':'+ss,game:S.game?.id||'all',ralphhits:S.ralphHits});
+    existing.sort((a,b)=>b.score-a.score);
+    localStorage.setItem('gcs_scores',JSON.stringify(existing.slice(0,20)));
+    document.getElementById('v-name').value='';
+    document.getElementById('v-name').placeholder='✅ SCORE SAVED!';
+    addLog('success','Score saved to leaderboard: '+name+' — '+S.score+' pts');
+  } catch(e){ addLog('error','Could not save score.'); }
+}
+
 function playAgain(){document.getElementById('victory').classList.remove('show');document.getElementById('confetti').innerHTML='';S={stability:73,game:null,char:null,glitches:[],fixed:0,ralphHits:0,score:0,autoLeft:3,startMs:Date.now(),stabIv:null,timerIv:null,curIdx:null};document.getElementById('log-list').innerHTML='';document.getElementById('terminal').innerHTML='';document.getElementById('proceed-btn').disabled=true;goScreen('s-games');startStab();startTimer();addLog('info','System reset. Ralph is still out there.')}
 function goStatus(){document.getElementById('victory').classList.remove('show');document.getElementById('confetti').innerHTML='';goScreen('s-status')}
 
 // ── STABILITY ──
-function startStab(){if(S.stabIv)clearInterval(S.stabIv);S.stabIv=setInterval(()=>{S.stability=Math.max(0,S.stability-.12);const pct=Math.round(S.stability);const fill=document.getElementById('stab-fill');fill.style.width=pct+'%';document.getElementById('stab-pct').textContent=pct+'%';if(pct<25)fill.style.background='var(--red)';else if(pct<50)fill.style.background='linear-gradient(90deg,var(--red),#ff8800)';else fill.style.background='linear-gradient(90deg,var(--red),var(--gold))';if(pct===0){doGlitch();shakeBody();addLog('error','⚠ STABILITY ZERO — RALPH WINS!');S.stability=28}},180)}
+function startStab(){if(S.stabIv)clearInterval(S.stabIv);S.stabIv=setInterval(()=>{S.stability=Math.max(0,S.stability-.12);const pct=Math.round(S.stability);const fill=document.getElementById('stab-fill');fill.style.width=pct+'%';document.getElementById('stab-pct').textContent=pct+'%';if(pct<25)fill.style.background='var(--red)';else if(pct<50)fill.style.background='linear-gradient(90deg,var(--red),#ff8800)';else fill.style.background='linear-gradient(90deg,var(--red),var(--gold))';updateMetrics();if(pct===0){doGlitch();shakeBody();addLog('error','⚠ STABILITY ZERO — RALPH WINS! System emergency reset.');S.stability=28}},180)}
 
 // ── TIMER ──
 function startTimer(){if(S.timerIv)clearInterval(S.timerIv);const t0=Date.now();S.timerIv=setInterval(()=>{const el=Math.floor((Date.now()-t0)/1000),h=Math.floor(el/3600),m=Math.floor((el%3600)/60),s=el%60;document.getElementById('m-uptime').textContent=h+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');const td=document.getElementById('repair-timer');if(td)td.textContent='TIME: '+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')},1000)}

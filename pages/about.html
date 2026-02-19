@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Game Central Station OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/global.css">
+<style>
+body { overflow-y: auto; }
+.page-wrap { min-height:100vh; padding:20px; display:flex; flex-direction:column; gap:18px; position:relative; z-index:1; }
+
+.top-nav { display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid var(--gold); padding-bottom:12px; flex-wrap:wrap; gap:10px; }
+.nav-logo { font-family:var(--font-pixel); font-size:clamp(8px,1.5vw,12px); color:var(--red); text-shadow:2px 2px 0 #500; }
+
+/* ── HERO ── */
+.about-hero {
+  display:grid; grid-template-columns:1fr 280px; gap:24px; align-items:center;
+  background:radial-gradient(ellipse at 30% 50%, rgba(255,36,66,0.06) 0%, transparent 70%);
+  border:2px solid rgba(255,36,66,0.2); padding:30px;
+}
+@media(max-width:700px) { .about-hero { grid-template-columns:1fr; } }
+.hero-left {}
+.hero-right { display:flex; justify-content:center; align-items:center; }
+.ralph-display { font-size:120px; animation:float 2s ease-in-out infinite; text-align:center; }
+.about-title { font-family:var(--font-pixel); font-size:clamp(12px,2.5vw,22px); color:var(--red); text-shadow:3px 3px 0 #500, 0 0 24px rgba(255,36,66,0.4); line-height:1.8; margin-bottom:12px; }
+.about-lead { font-family:var(--font-mono); font-size:clamp(16px,2vw,20px); color:#ccc; line-height:1.6; }
+
+/* ── FEATURE CARDS ── */
+.features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; }
+.feat-card {
+  background:var(--panel); border:2px solid; padding:18px;
+  display:flex; flex-direction:column; gap:8px; transition:all 0.18s; position:relative; overflow:hidden;
+}
+.feat-card:hover { transform:translateY(-3px); }
+.feat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+.feat-red   { border-color:rgba(255,36,66,0.4);   } .feat-red::before   { background:var(--red);   } .feat-red:hover   { border-color:var(--red);   box-shadow:0 0 20px rgba(255,36,66,0.2);   }
+.feat-blue  { border-color:rgba(0,212,255,0.4);   } .feat-blue::before  { background:var(--blue);  } .feat-blue:hover  { border-color:var(--blue);  box-shadow:0 0 20px rgba(0,212,255,0.2);   }
+.feat-green { border-color:rgba(57,255,20,0.4);   } .feat-green::before { background:var(--green); } .feat-green:hover { border-color:var(--green); box-shadow:0 0 20px rgba(57,255,20,0.2);   }
+.feat-gold  { border-color:rgba(255,215,0,0.4);   } .feat-gold::before  { background:var(--gold);  } .feat-gold:hover  { border-color:var(--gold);  box-shadow:0 0 20px rgba(255,215,0,0.2);   }
+.feat-purp  { border-color:rgba(191,0,255,0.4);   } .feat-purp::before  { background:var(--purple);} .feat-purp:hover  { border-color:var(--purple);box-shadow:0 0 20px rgba(191,0,255,0.2);   }
+.feat-pink  { border-color:rgba(255,105,180,0.4); } .feat-pink::before  { background:var(--pink);  } .feat-pink:hover  { border-color:var(--pink);  box-shadow:0 0 20px rgba(255,105,180,0.2); }
+.feat-icon  { font-size:32px; }
+.feat-title { font-family:var(--font-pixel); font-size:7px; color:var(--gold); line-height:1.8; }
+.feat-desc  { font-family:var(--font-mono); font-size:16px; color:#aaa; line-height:1.4; }
+
+/* ── TECH STACK ── */
+.tech-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+.tech-card {
+  background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1);
+  padding:14px; display:flex; flex-direction:column; align-items:center; gap:6px;
+  transition:all 0.15s;
+}
+.tech-card:hover { border-color:var(--blue); background:rgba(0,212,255,0.05); }
+.tech-icon { font-size:28px; }
+.tech-name { font-family:var(--font-pixel); font-size:6px; color:var(--blue); text-align:center; line-height:1.8; }
+.tech-desc { font-family:var(--font-mono); font-size:13px; color:#666; text-align:center; }
+
+/* ── TIMELINE ── */
+.timeline { display:flex; flex-direction:column; gap:0; position:relative; }
+.timeline::before { content:''; position:absolute; left:20px; top:0; bottom:0; width:2px; background:linear-gradient(to bottom, var(--red), var(--gold), var(--blue)); }
+.tl-item { display:flex; gap:16px; padding:14px 14px 14px 50px; position:relative; }
+.tl-dot { position:absolute; left:12px; top:18px; width:18px; height:18px; border-radius:50%; border:2px solid; display:flex; align-items:center; justify-content:center; font-size:8px; }
+.tl-content { flex:1; }
+.tl-label { font-family:var(--font-pixel); font-size:6px; color:var(--gold); margin-bottom:4px; }
+.tl-text  { font-family:var(--font-mono); font-size:16px; color:#ccc; line-height:1.4; }
+
+/* ── STORY SECTION ── */
+.story-box { padding:24px; }
+.story-box p { font-family:var(--font-mono); font-size:18px; color:#ccc; line-height:1.7; margin-bottom:12px; }
+.story-box p:last-child { margin-bottom:0; }
+.story-box strong { color:var(--gold); }
+.story-box em     { color:var(--red); font-style:normal; }
+
+/* ── CTA SECTION ── */
+.cta-box { text-align:center; padding:30px; background:radial-gradient(ellipse at center, rgba(255,215,0,0.06) 0%, transparent 70%); border:2px solid rgba(255,215,0,0.2); }
+.cta-title { font-family:var(--font-pixel); font-size:clamp(10px,2vw,16px); color:var(--gold); line-height:1.8; margin-bottom:14px; }
+.cta-btns  { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+
+.page-footer { border-top:2px solid rgba(255,36,66,0.3); padding-top:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+.footer-text { font-family:var(--font-mono); font-size:15px; color:var(--muted); }
+</style>
+</head>
+<body>
+<div id="cursor">👊</div>
+<div id="scanlines"></div>
+<div id="pixelgrid"></div>
+<div id="glitch-overlay"></div>
+
+<div class="ticker-bar">
+  <span class="ticker-inner">
+    ℹ ABOUT GAME CENTRAL STATION OS &nbsp;•&nbsp; 🏠 BUILT WITH PURE HTML, CSS &amp; JAVASCRIPT &nbsp;•&nbsp;
+    🎮 INSPIRED BY WRECK-IT RALPH (2012) &nbsp;•&nbsp; ⚡ NO FRAMEWORKS — JUST CODE &nbsp;•&nbsp;
+    💥 RALPH WAS NOT HARMED IN THE MAKING OF THIS PROJECT &nbsp;&nbsp;&nbsp;
+  </span>
+</div>
+
+<div class="page-wrap">
+
+  <!-- NAV -->
+  <nav class="top-nav">
+    <div class="nav-logo">🎮 GAME CENTRAL STATION OS</div>
+    <div class="nav-links">
+      <a href="../index.html"    class="nav-link">🏠 MAIN GAME</a>
+      <a href="how-to-play.html" class="nav-link">📖 HOW TO PLAY</a>
+      <a href="leaderboard.html" class="nav-link">🏆 LEADERBOARD</a>
+      <a href="about.html"       class="nav-link active">ℹ ABOUT</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="about-hero">
+    <div class="hero-left">
+      <div class="about-title">ABOUT THIS PROJECT</div>
+      <p class="about-lead">
+        Game Central Station OS is a browser-based <strong style="color:var(--gold)">interactive game simulator</strong>
+        that puts you in charge of an arcade machine network straight out of the world of
+        <strong style="color:var(--red)">Wreck-It Ralph</strong>.
+        Built entirely with vanilla HTML, CSS, and JavaScript — no libraries, no frameworks, just pure code.
+      </p>
+    </div>
+    <div class="hero-right">
+      <div class="ralph-display">👊</div>
+    </div>
+  </div>
+
+  <!-- STORY -->
+  <div class="section-title neon-red">📖 THE STORY</div>
+  <div class="panel story-box" style="border-color:rgba(255,36,66,0.4)">
+    <p>
+      In the world of <strong>Wreck-It Ralph</strong>, every arcade game is a living world populated by characters
+      who exist even when the arcade is closed. <strong>Game Central Station</strong> is the hub connecting
+      all the arcade machines via power strips — the internet of the arcade world.
+    </p>
+    <p>
+      <em>Ralph</em> — the villain of Fix-It Felix Jr. — is tired of being the bad guy.
+      He's gone rogue, jumping between games and <em>breaking everything in sight</em>.
+      Cy-Bugs from Hero's Duty are escaping containment. Sugar Rush has been unplugged entirely.
+    </p>
+    <p>
+      <strong>You are the System Administrator</strong> of Game Central Station OS. It's your job to
+      select repair technicians, diagnose the digital glitches Ralph has caused, and restore
+      every game to working order before <em>total system collapse</em>. Fix it. Felix can't do it alone.
+    </p>
+  </div>
+
+  <!-- FEATURES -->
+  <div class="section-title neon-gold">✨ FEATURES</div>
+  <div class="features-grid">
+    <div class="feat-card feat-red">
+      <div class="feat-icon">🖥️</div>
+      <div class="feat-title">AUTHENTIC OS BOOT SEQUENCE</div>
+      <div class="feat-desc">A full arcade OS boot animation with progress bar, status messages, and Ralph warnings. Even hesitates mid-boot!</div>
+    </div>
+    <div class="feat-card feat-blue">
+      <div class="feat-icon">🎮</div>
+      <div class="feat-title">3 PLAYABLE GAME WORLDS</div>
+      <div class="feat-desc">Fix-It Felix Jr., Hero's Duty, and Sugar Rush — each with unique characters, glitches, and storylines.</div>
+    </div>
+    <div class="feat-card feat-green">
+      <div class="feat-icon">⌨️</div>
+      <div class="feat-title">TERMINAL REPAIR SYSTEM</div>
+      <div class="feat-desc">Type repair codes into a real terminal interface. Wrong codes trigger system instability. Every keypress matters!</div>
+    </div>
+    <div class="feat-card feat-gold">
+      <div class="feat-icon">📊</div>
+      <div class="feat-title">LIVE SYSTEM MONITORING</div>
+      <div class="feat-desc">Real-time stability meter, system log, live metrics. Watch the system health degrade as Ralph causes havoc.</div>
+    </div>
+    <div class="feat-card feat-purp">
+      <div class="feat-icon">🎨</div>
+      <div class="feat-title">CRT / RETRO AESTHETIC</div>
+      <div class="feat-desc">Scanlines, pixel grid, glitch overlays, neon glow effects, and a custom fist cursor. Full retro arcade immersion.</div>
+    </div>
+    <div class="feat-card feat-pink">
+      <div class="feat-icon">🏆</div>
+      <div class="feat-title">SCORING & LEADERBOARD</div>
+      <div class="feat-desc">Earn points for fixing glitches, get time bonuses, lose points for Ralph incidents. Compete on the leaderboard!</div>
+    </div>
+  </div>
+
+  <!-- TECH STACK -->
+  <div class="section-title neon-blue">🛠 TECH STACK</div>
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="tech-icon">🌐</div>
+      <div class="tech-name">HTML5</div>
+      <div class="tech-desc">Semantic structure, multi-page architecture</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-icon">🎨</div>
+      <div class="tech-name">CSS3</div>
+      <div class="tech-desc">Animations, variables, grid, flexbox, keyframes</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-icon">⚡</div>
+      <div class="tech-name">VANILLA JS</div>
+      <div class="tech-desc">Zero frameworks. Pure JavaScript game logic</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-icon">🔤</div>
+      <div class="tech-name">GOOGLE FONTS</div>
+      <div class="tech-desc">Press Start 2P, VT323, Orbitron typefaces</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-icon">📐</div>
+      <div class="tech-name">CSS GRID</div>
+      <div class="tech-desc">Responsive layouts across all screen sizes</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-icon">🎭</div>
+      <div class="tech-name">SVG ART</div>
+      <div class="tech-desc">Custom pixel-art SVG characters, no images needed</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-icon">💾</div>
+      <div class="tech-name">LOCALSTORAGE</div>
+      <div class="tech-desc">Persistent leaderboard scores across sessions</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-icon">🚀</div>
+      <div class="tech-name">VERCEL</div>
+      <div class="tech-desc">Deployed and hosted on Vercel for free</div>
+    </div>
+  </div>
+
+  <!-- DEVELOPMENT TIMELINE -->
+  <div class="section-title" style="color:var(--purple);animation:neonFlare 2s infinite">📅 HOW IT WAS BUILT</div>
+  <div class="panel" style="padding:14px;border-color:rgba(191,0,255,0.4)">
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color:var(--red);color:var(--red);background:rgba(255,36,66,0.1)">1</div>
+        <div class="tl-content">
+          <div class="tl-label">PHASE 1 — CONCEPT &amp; DESIGN</div>
+          <div class="tl-text">Designed the Wreck-It Ralph OS concept. Chose the retro CRT arcade aesthetic. Planned the game flow: Boot → Game Select → Character Select → Repair → Victory.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color:var(--gold);color:var(--gold);background:rgba(255,215,0,0.1)">2</div>
+        <div class="tl-content">
+          <div class="tl-label">PHASE 2 — CORE GAME ENGINE</div>
+          <div class="tl-text">Built the boot sequence, game state management, and the glitch repair system with the terminal interface. Implemented the stability meter and scoring.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color:var(--blue);color:var(--blue);background:rgba(0,212,255,0.1)">3</div>
+        <div class="tl-content">
+          <div class="tl-label">PHASE 3 — VISUAL EFFECTS</div>
+          <div class="tl-text">Added CRT scanlines, glitch overlays, neon glow animations, confetti, flying bricks, and the custom fist cursor. Pixel-art SVG characters created inline.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color:var(--green);color:var(--green);background:rgba(57,255,20,0.1)">4</div>
+        <div class="tl-content">
+          <div class="tl-label">PHASE 4 — MULTI-PAGE EXPANSION</div>
+          <div class="tl-text">Expanded from single-page to multi-page with How to Play, Leaderboard, and About pages. Created shared global CSS for consistency across all pages.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="border-color:var(--purple);color:var(--purple);background:rgba(191,0,255,0.1)">5</div>
+        <div class="tl-content">
+          <div class="tl-label">PHASE 5 — DEPLOYMENT</div>
+          <div class="tl-text">Pushed to GitHub and deployed on Vercel. Continuous deployment enabled — every push auto-deploys the latest version to the live URL.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-box">
+    <div class="cta-title">READY TO SAVE GAME CENTRAL STATION?</div>
+    <div class="cta-btns">
+      <a href="../index.html"    class="px-btn grn">▶ PLAY NOW</a>
+      <a href="how-to-play.html" class="px-btn">📖 HOW TO PLAY</a>
+      <a href="leaderboard.html" class="px-btn blue">🏆 LEADERBOARD</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <div class="footer-text">GAME CENTRAL STATION OS v2.4.1 — RALPH EDITION &nbsp;|&nbsp; Inspired by Wreck-It Ralph (2012)</div>
+    <div class="footer-text">Built with ❤ using pure HTML, CSS &amp; JavaScript</div>
+  </div>
+
+</div>
+
+<script>
+const cur = document.getElementById('cursor');
+document.addEventListener('mousemove', e => { cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px'; });
+
+const glitchOverlay = document.getElementById('glitch-overlay');
+function doGlitch() {
+  glitchOverlay.classList.remove('pop'); void glitchOverlay.offsetWidth;
+  glitchOverlay.classList.add('pop');
+  setTimeout(() => glitchOverlay.classList.remove('pop'), 360);
+}
+setInterval(() => { if (Math.random() < 0.3) doGlitch(); }, 10000);
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.style.animation = 'slideUp 0.4s ease forwards';
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.feat-card, .tech-card, .tl-item').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

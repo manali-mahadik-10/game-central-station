@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaderboard — Game Central Station OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/global.css">
+<style>
+body { overflow-y: auto; }
+.page-wrap { min-height: 100vh; padding: 20px; display: flex; flex-direction: column; gap: 18px; position: relative; z-index: 1; }
+
+.top-nav { display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid var(--gold); padding-bottom:12px; flex-wrap:wrap; gap:10px; }
+.nav-logo { font-family:var(--font-pixel); font-size:clamp(8px,1.5vw,12px); color:var(--red); text-shadow:2px 2px 0 #500; }
+.nav-links { display:flex; gap:6px; flex-wrap:wrap; }
+
+/* ── HERO ── */
+.lb-hero {
+  text-align:center; padding:30px 20px;
+  background:radial-gradient(ellipse at center, rgba(255,215,0,0.08) 0%, transparent 70%);
+  border:2px solid rgba(255,215,0,0.25);
+}
+.lb-title { font-family:var(--font-pixel); font-size:clamp(14px,3vw,26px); color:var(--gold); text-shadow:3px 3px 0 #775500; line-height:1.8; }
+.trophy-row { display:flex; justify-content:center; gap:24px; margin:14px 0; flex-wrap:wrap; }
+.trophy { font-size:48px; animation:float 2s ease-in-out infinite; }
+.trophy:nth-child(2) { animation-delay:0.3s; font-size:56px; }
+.trophy:nth-child(3) { animation-delay:0.6s; }
+
+/* ── LAYOUT ── */
+.lb-layout { display:grid; grid-template-columns:1fr 340px; gap:16px; }
+@media(max-width:800px) { .lb-layout { grid-template-columns:1fr; } }
+
+/* ── TABLE ── */
+.lb-table-wrap { display:flex; flex-direction:column; gap:10px; }
+.lb-table { width:100%; border-collapse:collapse; }
+.lb-table thead th {
+  font-family:var(--font-pixel); font-size:7px; color:var(--gold);
+  background:rgba(255,215,0,0.06); border-bottom:2px solid var(--gold);
+  padding:10px 14px; text-align:left;
+}
+.lb-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.06); transition:background 0.12s; cursor:none; }
+.lb-table tbody tr:hover { background:rgba(255,255,255,0.04); }
+.lb-table td { font-family:var(--font-mono); font-size:18px; color:#ccc; padding:10px 14px; }
+.rank-1 td { color:var(--gold) !important; }
+.rank-2 td { color:#c0c0c0 !important; }
+.rank-3 td { color:#cd7f32 !important; }
+.rank-cell { font-family:var(--font-pixel); font-size:9px; font-weight:bold; }
+.score-cell { font-family:var(--font-pixel); font-size:9px; color:var(--green) !important; }
+.name-cell  { font-family:var(--font-pixel); font-size:7px; }
+.medal { font-size:18px; }
+.time-cell { color:var(--blue) !important; font-size:16px; }
+.game-tag {
+  font-family:var(--font-pixel); font-size:5px; padding:2px 5px;
+  border:1px solid; display:inline-block; margin-top:2px;
+}
+
+/* ── RIGHT PANEL ── */
+.lb-right { display:flex; flex-direction:column; gap:12px; }
+
+/* ── PODIUM ── */
+.podium-wrap { display:flex; align-items:flex-end; justify-content:center; gap:6px; padding:20px 14px 0; }
+.podium-col { display:flex; flex-direction:column; align-items:center; gap:4px; }
+.podium-name { font-family:var(--font-pixel); font-size:5px; color:var(--gold); text-align:center; line-height:1.7; }
+.podium-score { font-family:var(--font-pixel); font-size:6px; color:var(--green); }
+.podium-block {
+  width:70px; display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-pixel); font-size:12px; color:#000; font-weight:bold;
+}
+.p1 { background:var(--gold);  height:90px; }
+.p2 { background:#c0c0c0;      height:65px; }
+.p3 { background:#cd7f32;      height:45px; }
+.podium-emoji { font-size:22px; }
+
+/* ── STATS MINI ── */
+.mini-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.mstat {
+  background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.1);
+  padding:10px; display:flex; flex-direction:column; align-items:center; gap:4px;
+}
+.mstat-val { font-family:var(--font-pixel); font-size:14px; color:var(--gold); }
+.mstat-lbl { font-family:var(--font-pixel); font-size:5px; color:var(--muted); text-align:center; line-height:1.8; }
+
+/* ── SUBMIT FORM ── */
+.submit-box { padding:16px; display:flex; flex-direction:column; gap:10px; }
+.submit-title { font-family:var(--font-pixel); font-size:7px; color:var(--purple); }
+.form-row { display:flex; gap:6px; }
+.score-input {
+  flex:1; font-family:var(--font-pixel); font-size:8px;
+  background:#000; border:2px solid var(--purple); color:var(--purple);
+  padding:8px; outline:none; cursor:none;
+}
+.score-input:focus { box-shadow:0 0 10px var(--purple); }
+.submit-note { font-family:var(--font-mono); font-size:14px; color:#666; line-height:1.4; }
+
+/* ── GAME FILTER ── */
+.filter-bar { display:flex; gap:6px; flex-wrap:wrap; }
+.filter-btn {
+  font-family:var(--font-pixel); font-size:6px; padding:6px 10px;
+  background:transparent; cursor:none; border:1px solid rgba(255,255,255,0.15);
+  color:rgba(255,255,255,0.4); transition:all 0.1s;
+}
+.filter-btn:hover, .filter-btn.on {
+  border-color:var(--gold); color:var(--gold); background:rgba(255,215,0,0.06);
+}
+
+/* ── ACHIEVEMENT BADGES ── */
+.achievements-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:8px; }
+.ach-card {
+  background:var(--panel); border:1px solid rgba(255,215,0,0.2);
+  padding:12px; display:flex; flex-direction:column; align-items:center; gap:6px;
+  transition:all 0.18s;
+}
+.ach-card:hover { border-color:var(--gold); transform:scale(1.03); }
+.ach-card.locked { opacity:0.35; filter:grayscale(1); }
+.ach-icon { font-size:28px; }
+.ach-name { font-family:var(--font-pixel); font-size:5px; color:var(--gold); text-align:center; line-height:1.8; }
+.ach-desc { font-family:var(--font-mono); font-size:13px; color:#999; text-align:center; }
+
+.page-footer { border-top:2px solid rgba(255,36,66,0.3); padding-top:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+.footer-text { font-family:var(--font-mono); font-size:15px; color:var(--muted); }
+</style>
+</head>
+<body>
+<div id="cursor">👊</div>
+<div id="scanlines"></div>
+<div id="pixelgrid"></div>
+<div id="glitch-overlay"></div>
+
+<div class="ticker-bar">
+  <span class="ticker-inner">
+    🏆 GLOBAL LEADERBOARD — TOP REPAIR TECHNICIANS &nbsp;•&nbsp;
+    🥇 PLAYER_ONE: 2650 PTS &nbsp;•&nbsp; 🥈 FELIX_FAN: 2200 PTS &nbsp;•&nbsp; 🥉 VANELLOPE_V: 1980 PTS &nbsp;•&nbsp;
+    ⚡ CAN YOU BEAT THE HIGH SCORE? &nbsp;•&nbsp; 💥 RALPH HAS BEEN CONTAINED (MOSTLY) &nbsp;&nbsp;&nbsp;
+  </span>
+</div>
+
+<div class="page-wrap">
+
+  <!-- NAV -->
+  <nav class="top-nav">
+    <div class="nav-logo">🎮 GAME CENTRAL STATION OS</div>
+    <div class="nav-links">
+      <a href="../index.html"       class="nav-link">🏠 MAIN GAME</a>
+      <a href="how-to-play.html"    class="nav-link">📖 HOW TO PLAY</a>
+      <a href="leaderboard.html"    class="nav-link active">🏆 LEADERBOARD</a>
+      <a href="about.html"          class="nav-link">ℹ ABOUT</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="lb-hero">
+    <div class="trophy-row">
+      <span class="trophy">🥈</span>
+      <span class="trophy">🥇</span>
+      <span class="trophy">🥉</span>
+    </div>
+    <div class="lb-title">HALL OF FAME</div>
+    <p class="section-sub" style="margin-top:6px">TOP REPAIR TECHNICIANS — GAME CENTRAL STATION</p>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="lb-layout">
+
+    <!-- LEFT: TABLE -->
+    <div class="lb-table-wrap">
+      <div class="filter-bar">
+        <button class="filter-btn on" onclick="filterTable('all',this)">🎮 ALL GAMES</button>
+        <button class="filter-btn" onclick="filterTable('felix',this)">🏠 FIX-IT FELIX</button>
+        <button class="filter-btn" onclick="filterTable('duty',this)">🔫 HERO'S DUTY</button>
+        <button class="filter-btn" onclick="filterTable('sugar',this)">🍭 SUGAR RUSH</button>
+      </div>
+
+      <div class="panel" style="padding:0;overflow:hidden;border-color:var(--gold);animation:pulseGold 3s ease-in-out infinite">
+        <table class="lb-table" id="lb-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>PLAYER</th>
+              <th>SCORE</th>
+              <th>TIME</th>
+              <th>GAME</th>
+              <th>RALPH HITS</th>
+            </tr>
+          </thead>
+          <tbody id="lb-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RIGHT: SIDEBAR -->
+    <div class="lb-right">
+
+      <!-- PODIUM -->
+      <div class="panel" style="border-color:var(--gold);animation:pulseGold 3s ease-in-out infinite;padding:14px">
+        <div style="font-family:var(--font-pixel);font-size:7px;color:var(--gold);margin-bottom:8px;text-align:center">🏆 TOP 3 PODIUM</div>
+        <div class="podium-wrap">
+          <div class="podium-col">
+            <div class="podium-emoji">🥈</div>
+            <div class="podium-name">FELIX_FAN</div>
+            <div class="podium-score">2200</div>
+            <div class="podium-block p2">2</div>
+          </div>
+          <div class="podium-col">
+            <div class="podium-emoji">🥇</div>
+            <div class="podium-name">PLAYER_ONE</div>
+            <div class="podium-score">2650</div>
+            <div class="podium-block p1">1</div>
+          </div>
+          <div class="podium-col">
+            <div class="podium-emoji">🥉</div>
+            <div class="podium-name">VANELLOPE_V</div>
+            <div class="podium-score">1980</div>
+            <div class="podium-block p3">3</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MINI STATS -->
+      <div class="panel" style="padding:14px;border-color:var(--blue);animation:pulseBlue 3s ease-in-out infinite">
+        <div style="font-family:var(--font-pixel);font-size:7px;color:var(--blue);margin-bottom:10px">📊 GLOBAL STATS</div>
+        <div class="mini-stats">
+          <div class="mstat"><div class="mstat-val">247</div><div class="mstat-lbl">TOTAL GAMES PLAYED</div></div>
+          <div class="mstat"><div class="mstat-val">891</div><div class="mstat-lbl">GLITCHES FIXED</div></div>
+          <div class="mstat"><div class="mstat-val">156</div><div class="mstat-lbl">RALPH INCIDENTS</div></div>
+          <div class="mstat"><div class="mstat-val">73%</div><div class="mstat-lbl">AVG STABILITY</div></div>
+        </div>
+      </div>
+
+      <!-- SUBMIT SCORE -->
+      <div class="panel submit-box" style="border-color:var(--purple);animation:pulsePurp 3s ease-in-out infinite">
+        <div class="submit-title">📤 SUBMIT YOUR SCORE</div>
+        <div class="form-row">
+          <input class="score-input" id="name-input" placeholder="YOUR NAME" maxlength="12">
+        </div>
+        <div class="form-row">
+          <input class="score-input" id="score-input" placeholder="YOUR SCORE" type="number">
+          <button class="px-btn purp" style="font-size:7px;padding:8px 12px;white-space:nowrap" onclick="submitScore()">▶ SUBMIT</button>
+        </div>
+        <div class="submit-note">Play the main game and submit your final score to compete on the leaderboard!</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ACHIEVEMENTS -->
+  <div class="section-title neon-gold">🎖 ACHIEVEMENTS</div>
+  <div class="achievements-grid">
+    <div class="ach-card"><div class="ach-icon">🔨</div><div class="ach-name">FIRST FIX</div><div class="ach-desc">Repair your first glitch</div></div>
+    <div class="ach-card"><div class="ach-icon">⚡</div><div class="ach-name">SPEED DEMON</div><div class="ach-desc">Finish under 3 minutes</div></div>
+    <div class="ach-card"><div class="ach-icon">🏆</div><div class="ach-name">GRAND MASTER</div><div class="ach-desc">Score over 2500 points</div></div>
+    <div class="ach-card"><div class="ach-icon">🚫</div><div class="ach-name">RALPH PROOF</div><div class="ach-desc">Zero Ralph incidents</div></div>
+    <div class="ach-card"><div class="ach-icon">🤖</div><div class="ach-name">NO CHEATING</div><div class="ach-desc">Don't use Auto-Repair</div></div>
+    <div class="ach-card"><div class="ach-icon">🍭</div><div class="ach-name">SUGAR RUSH</div><div class="ach-desc">Restore Sugar Rush</div></div>
+    <div class="ach-card locked"><div class="ach-icon">💥</div><div class="ach-name">SELF DESTRUCT</div><div class="ach-desc">Hit Ralph button 5 times</div></div>
+    <div class="ach-card locked"><div class="ach-icon">👑</div><div class="ach-name">KING CANDY</div><div class="ach-desc">Find the secret easter egg</div></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <div class="footer-text">GAME CENTRAL STATION OS v2.4.1 — RALPH EDITION</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a href="../index.html" class="px-btn grn" style="font-size:7px;padding:8px 14px">▶ PLAY NOW</a>
+      <a href="how-to-play.html" class="px-btn" style="font-size:7px;padding:8px 14px">📖 HOW TO PLAY</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const cur = document.getElementById('cursor');
+document.addEventListener('mousemove', e => { cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px'; });
+
+const glitchOverlay = document.getElementById('glitch-overlay');
+function doGlitch() {
+  glitchOverlay.classList.remove('pop'); void glitchOverlay.offsetWidth;
+  glitchOverlay.classList.add('pop');
+  setTimeout(() => glitchOverlay.classList.remove('pop'), 360);
+}
+setInterval(() => { if (Math.random() < 0.3) doGlitch(); }, 9000);
+
+// ── LEADERBOARD DATA ──
+const defaultScores = [
+  { name: 'PLAYER_ONE',   score: 2650, time: '03:12', game: 'felix', ralphhits: 0 },
+  { name: 'FELIX_FAN',    score: 2200, time: '04:01', game: 'duty',  ralphhits: 1 },
+  { name: 'VANELLOPE_V',  score: 1980, time: '04:44', game: 'sugar', ralphhits: 0 },
+  { name: 'SGT_CALHOUN',  score: 1750, time: '05:20', game: 'felix', ralphhits: 2 },
+  { name: 'FIX_FELIX',    score: 1500, time: '06:05', game: 'duty',  ralphhits: 1 },
+  { name: 'TURBO_MODE',   score: 1320, time: '06:55', game: 'sugar', ralphhits: 3 },
+  { name: 'JUBILEENA',    score: 1100, time: '07:30', game: 'felix', ralphhits: 2 },
+  { name: 'TAFFYTA_M',    score:  980, time: '08:15', game: 'sugar', ralphhits: 4 },
+  { name: 'HERO_SOLDIER', score:  750, time: '09:00', game: 'duty',  ralphhits: 3 },
+  { name: 'KING_CANDY',   score:  500, time: '10:30', game: 'sugar', ralphhits: 6 },
+];
+
+const GAME_LABELS = { felix:'🏠 FIX-IT FELIX', duty:'🔫 HERO\'S DUTY', sugar:'🍭 SUGAR RUSH', all:'ALL' };
+const GAME_COLORS = { felix:'var(--red)', duty:'var(--blue)', sugar:'var(--pink)' };
+
+function getScores() {
+  try {
+    const saved = localStorage.getItem('gcs_scores');
+    return saved ? JSON.parse(saved) : defaultScores;
+  } catch(e) { return defaultScores; }
+}
+function saveScores(arr) {
+  try { localStorage.setItem('gcs_scores', JSON.stringify(arr)); } catch(e) {}
+}
+
+let currentFilter = 'all';
+
+function renderTable(filter = 'all') {
+  const scores = getScores();
+  const filtered = filter === 'all' ? scores : scores.filter(s => s.game === filter);
+  const sorted = [...filtered].sort((a,b) => b.score - a.score);
+  const tbody = document.getElementById('lb-body');
+  tbody.innerHTML = '';
+  sorted.forEach((s, i) => {
+    const rank = i + 1;
+    const medals = ['🥇','🥈','🥉'];
+    const tr = document.createElement('tr');
+    if (rank <= 3) tr.className = 'rank-'+rank;
+    tr.innerHTML = `
+      <td class="rank-cell">${rank <= 3 ? '<span class="medal">'+medals[rank-1]+'</span>' : rank}</td>
+      <td class="name-cell">${s.name}</td>
+      <td class="score-cell">${s.score.toLocaleString()}</td>
+      <td class="time-cell">⏱ ${s.time}</td>
+      <td><span class="game-tag" style="color:${GAME_COLORS[s.game]||'#ccc'};border-color:${GAME_COLORS[s.game]||'#ccc'}">${GAME_LABELS[s.game]||s.game}</span></td>
+      <td style="color:${s.ralphhits===0?'var(--green)':'var(--red)'}">${s.ralphhits === 0 ? '✅ NONE' : '💥 ' + s.ralphhits}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function filterTable(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderTable(filter);
+  doGlitch();
+}
+
+function submitScore() {
+  const name = document.getElementById('name-input').value.trim().toUpperCase().replace(/[^A-Z0-9_]/g,'').slice(0,12);
+  const score = parseInt(document.getElementById('score-input').value);
+  if (!name || isNaN(score) || score < 0) {
+    alert('Please enter a valid name and score!'); return;
+  }
+  const scores = getScores();
+  scores.push({ name, score, time: '--:--', game: 'all', ralphhits: 0 });
+  scores.sort((a,b) => b.score - a.score);
+  saveScores(scores.slice(0, 20));
+  document.getElementById('name-input').value = '';
+  document.getElementById('score-input').value = '';
+  renderTable(currentFilter);
+  doGlitch();
+}
+
+renderTable();
+</script>
+</body>
+</html>

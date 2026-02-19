@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How To Play — Game Central Station OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/global.css">
+<style>
+body { overflow-y: auto; cursor: none; }
+.page-wrap {
+  min-height: 100vh; padding: 20px;
+  display: flex; flex-direction: column; gap: 18px;
+  position: relative; z-index: 1;
+}
+
+/* ── TOP NAV ── */
+.top-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 2px solid var(--gold); padding-bottom: 12px; flex-wrap: wrap; gap: 10px;
+}
+.nav-logo { font-family: var(--font-pixel); font-size: clamp(8px,1.5vw,12px); color: var(--red); text-shadow: 2px 2px 0 #500; }
+.nav-links { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ── HERO SECTION ── */
+.hero {
+  text-align: center; padding: 30px 20px;
+  background: radial-gradient(ellipse at center, rgba(255,36,66,0.08) 0%, transparent 70%);
+  border: 2px solid rgba(255,36,66,0.2); animation: pixIn 0.6s ease;
+}
+.hero-title {
+  font-family: var(--font-pixel); font-size: clamp(14px,3vw,28px);
+  color: var(--gold); text-shadow: 3px 3px 0 #775500, 0 0 24px rgba(255,215,0,0.4);
+  line-height: 1.8; margin-bottom: 10px;
+}
+.hero-sub { font-family: var(--font-mono); font-size: clamp(16px,2vw,22px); color: var(--muted); }
+.ralph-emoji { font-size: 64px; display: block; animation: float 2s ease-in-out infinite; margin: 12px 0; }
+
+/* ── STEP CARDS ── */
+.steps-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;
+}
+.step-card {
+  background: var(--panel); border: 2px solid rgba(255,215,0,0.3);
+  padding: 20px; display: flex; flex-direction: column; gap: 10px;
+  transition: all 0.2s; position: relative; overflow: hidden;
+}
+.step-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 0 24px rgba(255,215,0,0.2); }
+.step-num {
+  font-family: var(--font-pixel); font-size: 28px; color: var(--red);
+  text-shadow: 3px 3px 0 #500; line-height: 1;
+}
+.step-icon { font-size: 36px; }
+.step-title { font-family: var(--font-pixel); font-size: 8px; color: var(--gold); line-height: 1.8; }
+.step-desc { font-family: var(--font-mono); font-size: 17px; color: #ccc; line-height: 1.5; }
+.step-tip {
+  font-family: var(--font-pixel); font-size: 6px; color: var(--green);
+  border-left: 3px solid var(--green); padding-left: 8px; line-height: 2;
+}
+.step-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--red), var(--gold), var(--blue));
+}
+
+/* ── SCORING TABLE ── */
+.scoring-section { display: flex; flex-direction: column; gap: 12px; }
+.score-table { width: 100%; border-collapse: collapse; }
+.score-table th {
+  font-family: var(--font-pixel); font-size: 7px; color: var(--gold);
+  border-bottom: 2px solid var(--gold); padding: 10px 14px; text-align: left;
+  background: rgba(255,215,0,0.05);
+}
+.score-table td {
+  font-family: var(--font-mono); font-size: 17px; color: #ccc;
+  padding: 9px 14px; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.score-table tr:hover td { background: rgba(255,255,255,0.03); }
+.pts { color: var(--green); font-family: var(--font-pixel); font-size: 8px; }
+.pts-neg { color: var(--red); font-family: var(--font-pixel); font-size: 8px; }
+
+/* ── CHARACTERS GUIDE ── */
+.chars-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;
+}
+.char-guide-card {
+  background: var(--panel); border: 2px solid rgba(0,212,255,0.25);
+  padding: 16px; display: flex; flex-direction: column; align-items: center;
+  gap: 8px; transition: all 0.18s;
+}
+.char-guide-card:hover { border-color: var(--blue); transform: scale(1.03); }
+.cg-emoji { font-size: 40px; }
+.cg-name  { font-family: var(--font-pixel); font-size: 6px; color: var(--gold); text-align: center; line-height: 1.8; }
+.cg-role  { font-size: 14px; color: var(--blue); text-align: center; }
+.cg-tip   { font-size: 14px; color: #999; text-align: center; line-height: 1.4; }
+
+/* ── CONTROLS GUIDE ── */
+.controls-box {
+  background: var(--panel); border: 2px solid rgba(57,255,20,0.3);
+  padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;
+}
+.ctrl-item { display: flex; align-items: center; gap: 10px; }
+.ctrl-key {
+  font-family: var(--font-pixel); font-size: 7px; color: #000;
+  background: var(--gold); padding: 5px 8px; white-space: nowrap;
+  border-bottom: 3px solid #aa8800; min-width: 60px; text-align: center;
+}
+.ctrl-desc { font-family: var(--font-mono); font-size: 16px; color: #ccc; }
+
+/* ── FAQ ── */
+.faq-list { display: flex; flex-direction: column; gap: 8px; }
+.faq-item {
+  background: var(--panel); border: 1px solid rgba(255,255,255,0.08);
+  padding: 14px 16px; cursor: none; transition: border-color 0.15s;
+}
+.faq-item:hover { border-color: var(--purple); }
+.faq-q { font-family: var(--font-pixel); font-size: 7px; color: var(--purple); line-height: 1.8; }
+.faq-a { font-family: var(--font-mono); font-size: 16px; color: #aaa; margin-top: 6px; line-height: 1.4; display: none; }
+.faq-item.open .faq-a { display: block; animation: slideUp 0.2s ease; }
+.faq-item.open { border-color: var(--purple); background: rgba(191,0,255,0.04); }
+
+/* ── FOOTER ── */
+.page-footer {
+  border-top: 2px solid rgba(255,36,66,0.3); padding-top: 14px;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+}
+.footer-text { font-family: var(--font-mono); font-size: 15px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div id="cursor">👊</div>
+<div id="scanlines"></div>
+<div id="pixelgrid"></div>
+<div id="glitch-overlay"></div>
+
+<div class="ticker-bar">
+  <span class="ticker-inner">
+    ⚡ WELCOME TO GAME CENTRAL STATION OS &nbsp;•&nbsp; 🏠 FIX-IT FELIX JR. — RALPH DETECTED &nbsp;•&nbsp;
+    🔫 HERO'S DUTY — ONLINE &nbsp;•&nbsp; 🍭 SUGAR RUSH — OFFLINE &nbsp;•&nbsp;
+    ⚠ GLITCH LEVEL: HIGH &nbsp;•&nbsp; 💥 DO NOT LET RALPH WIN &nbsp;•&nbsp;
+    🏆 COMPLETE ALL REPAIRS TO WIN &nbsp;&nbsp;&nbsp;
+  </span>
+</div>
+
+<div class="page-wrap">
+
+  <!-- NAV -->
+  <nav class="top-nav">
+    <div class="nav-logo">🎮 GAME CENTRAL STATION OS</div>
+    <div class="nav-links">
+      <a href="../index.html"       class="nav-link">🏠 MAIN GAME</a>
+      <a href="how-to-play.html"    class="nav-link active">📖 HOW TO PLAY</a>
+      <a href="leaderboard.html"    class="nav-link">🏆 LEADERBOARD</a>
+      <a href="about.html"          class="nav-link">ℹ ABOUT</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="ralph-emoji">👊</span>
+    <h1 class="hero-title">HOW TO PLAY</h1>
+    <p class="hero-sub">Your complete guide to saving Game Central Station from Wreck-It Ralph!</p>
+  </div>
+
+  <!-- WHAT IS THIS -->
+  <div class="panel" style="padding:20px;border-color:var(--blue);animation:pulseBlue 3s ease-in-out infinite;">
+    <div class="section-title neon-blue" style="margin-bottom:10px">🎯 WHAT IS GAME CENTRAL STATION OS?</div>
+    <p style="font-family:var(--font-mono);font-size:18px;color:#ccc;line-height:1.6;max-width:800px">
+      Game Central Station OS is an interactive arcade management simulator inspired by <strong style="color:var(--gold)">Wreck-It Ralph</strong>.
+      You are the <strong style="color:var(--green)">System Administrator</strong> of an arcade machine network.
+      Wreck-It Ralph has gone rogue and is <strong style="color:var(--red)">breaking games from the inside</strong>!
+      Your mission: select a repair technician, diagnose glitches, enter repair codes, and restore all arcade games to working order
+      — before Ralph causes <strong style="color:var(--red)">total system collapse!</strong>
+    </p>
+  </div>
+
+  <!-- STEP BY STEP -->
+  <div class="section-title neon-gold">📋 STEP-BY-STEP GUIDE</div>
+  <div class="steps-grid">
+    <div class="step-card shine-card">
+      <div class="step-num">01</div>
+      <div class="step-icon">💻</div>
+      <div class="step-title">BOOT THE SYSTEM</div>
+      <div class="step-desc">Watch the arcade OS boot up. The system detects Ralph's presence and warns you about system instability. Wait for the boot to finish, then click to enter.</div>
+      <div class="step-tip">💡 TIP: The system stability starts at 73%. It drops over time — work fast!</div>
+    </div>
+    <div class="step-card shine-card">
+      <div class="step-num">02</div>
+      <div class="step-icon">🎮</div>
+      <div class="step-title">PICK A GAME</div>
+      <div class="step-desc">You'll see 3 arcade games: Fix-It Felix Jr., Hero's Duty, and Sugar Rush. Each has different glitch types and severity levels. Flashing red cards need urgent attention!</div>
+      <div class="step-tip">💡 TIP: Fix-It Felix Jr. is marked CRITICAL — Ralph is actively there!</div>
+    </div>
+    <div class="step-card shine-card">
+      <div class="step-num">03</div>
+      <div class="step-icon">👥</div>
+      <div class="step-title">CHOOSE A CHARACTER</div>
+      <div class="step-desc">Each game has 4 characters. Select a repair technician to send on the mission. Read their status carefully. Avoid selecting Ralph — he makes things worse!</div>
+      <div class="step-tip">⚠ WARNING: Clicking Ralph triggers a destruction event! -15% stability!</div>
+    </div>
+    <div class="step-card shine-card">
+      <div class="step-num">04</div>
+      <div class="step-icon">⚡</div>
+      <div class="step-title">REPAIR GLITCHES</div>
+      <div class="step-desc">Click each glitch from the list. Read the description, then type the exact repair code shown in the hint and press ENTER. Fix all glitches to complete the mission!</div>
+      <div class="step-tip">💡 TIP: Codes are shown in the hint — just type them exactly and press ENTER!</div>
+    </div>
+    <div class="step-card shine-card">
+      <div class="step-num">05</div>
+      <div class="step-icon">🤖</div>
+      <div class="step-title">USE AUTO-REPAIR (WISELY)</div>
+      <div class="step-desc">You have 3 Auto-Repair tokens per session. Use them on CRITICAL severity glitches to save time. Each auto-repair automatically fixes one glitch without needing a code.</div>
+      <div class="step-tip">💡 TIP: Save Auto-Repairs for CRIT glitches to maximize your score bonus!</div>
+    </div>
+    <div class="step-card shine-card">
+      <div class="step-num">06</div>
+      <div class="step-icon">🏆</div>
+      <div class="step-title">RESTART THE GAME</div>
+      <div class="step-desc">Once all glitches are fixed, click "RESTART GAME" to bring the arcade game back online. The faster you finish, the bigger your time bonus score!</div>
+      <div class="step-tip">💡 TIP: Finish under 5 minutes for a massive time bonus on your final score!</div>
+    </div>
+  </div>
+
+  <!-- SCORING -->
+  <div class="scoring-section">
+    <div class="section-title neon-red">💯 SCORING SYSTEM</div>
+    <div class="panel" style="padding:0;border-color:var(--gold);animation:pulseGold 3s ease-in-out infinite;">
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th>ACTION</th>
+            <th>POINTS</th>
+            <th>NOTES</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>🔴 Fix CRITICAL Glitch</td><td><span class="pts">+300 pts</span></td><td>Highest severity, hardest to spot</td></tr>
+          <tr><td>🟠 Fix HIGH Glitch</td><td><span class="pts">+200 pts</span></td><td>Medium-high priority</td></tr>
+          <tr><td>🟡 Fix MEDIUM Glitch</td><td><span class="pts">+100 pts</span></td><td>Lower priority but still counts</td></tr>
+          <tr><td>⏱ Time Bonus</td><td><span class="pts">Up to +600 pts</span></td><td>Faster completion = bigger bonus</td></tr>
+          <tr><td>💥 Ralph Button</td><td><span class="pts-neg">-150 pts</span></td><td>Also drops stability by 22%!</td></tr>
+          <tr><td>❌ Wrong Repair Code</td><td><span class="pts-neg">-3% stability</span></td><td>Wastes time and damages system</td></tr>
+          <tr><td>👊 Clicking Ralph</td><td><span class="pts-neg">-15% stability</span></td><td>Never click Ralph in character select!</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CHARACTERS -->
+  <div class="section-title neon-blue">👾 CHARACTER GUIDE</div>
+  <div class="chars-grid">
+    <div class="char-guide-card">
+      <div class="cg-emoji">🔨</div>
+      <div class="cg-name">FIX-IT FELIX JR.</div>
+      <div class="cg-role">⭐ Best Repair Tech</div>
+      <div class="cg-tip">The hero! Hammer repairs everything efficiently. High success rate on all glitch types.</div>
+    </div>
+    <div class="char-guide-card">
+      <div class="cg-emoji">💂</div>
+      <div class="cg-name">SGT. CALHOUN</div>
+      <div class="cg-role">⭐ Military Grade</div>
+      <div class="cg-tip">High-powered. Excellent for Hero's Duty repairs. Aggressive but effective.</div>
+    </div>
+    <div class="char-guide-card">
+      <div class="cg-emoji">🏎️</div>
+      <div class="cg-name">VANELLOPE</div>
+      <div class="cg-role">⚡ Glitch Specialist</div>
+      <div class="cg-tip">She IS a glitch, so she understands them! Great for Sugar Rush missions.</div>
+    </div>
+    <div class="char-guide-card" style="border-color:rgba(255,36,66,0.4)">
+      <div class="cg-emoji">👊</div>
+      <div class="cg-name">WRECK-IT RALPH</div>
+      <div class="cg-role" style="color:var(--red)">⚠ DO NOT SELECT</div>
+      <div class="cg-tip" style="color:var(--red)">Selecting Ralph causes a destruction event! Stability drops 15%. You've been warned.</div>
+    </div>
+    <div class="char-guide-card">
+      <div class="cg-emoji">🪲</div>
+      <div class="cg-name">CY-BUG #4471</div>
+      <div class="cg-role">🔴 Escaped Enemy</div>
+      <div class="cg-tip">A Hero's Duty enemy. Cannot be selected for repair missions but appears in game status.</div>
+    </div>
+    <div class="char-guide-card">
+      <div class="cg-emoji">👑</div>
+      <div class="cg-name">KING CANDY</div>
+      <div class="cg-role">💀 Permanently Deleted</div>
+      <div class="cg-tip">Was secretly Turbo all along. Gone forever. Status: DELETED. Not available.</div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="section-title neon-grn">🖱 CONTROLS</div>
+  <div class="controls-box green-panel panel">
+    <div class="ctrl-item">
+      <div class="ctrl-key">CLICK</div>
+      <div class="ctrl-desc">Select games, characters, and glitches</div>
+    </div>
+    <div class="ctrl-item">
+      <div class="ctrl-key">TYPE</div>
+      <div class="ctrl-desc">Enter repair codes in the terminal</div>
+    </div>
+    <div class="ctrl-item">
+      <div class="ctrl-key">ENTER</div>
+      <div class="ctrl-desc">Submit your repair code</div>
+    </div>
+    <div class="ctrl-item">
+      <div class="ctrl-key">📊 STATUS</div>
+      <div class="ctrl-desc">View live system metrics and logs</div>
+    </div>
+    <div class="ctrl-item">
+      <div class="ctrl-key">⚡ EMRG</div>
+      <div class="ctrl-desc">Emergency jump between screens</div>
+    </div>
+    <div class="ctrl-item">
+      <div class="ctrl-key">🤖 AUTO</div>
+      <div class="ctrl-desc">Auto-repair one glitch (3 uses only!)</div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section-title" style="color:var(--purple);animation:neonFlare 2s infinite">❓ FREQUENTLY ASKED QUESTIONS</div>
+  <div class="faq-list">
+    <div class="faq-item" onclick="toggleFAQ(this)">
+      <div class="faq-q">▶ What happens if system stability reaches 0%?</div>
+      <div class="faq-a">If stability hits 0%, Ralph wins and the system crashes! But don't worry — the system auto-resets to 28% stability as a failsafe so you can keep playing. Try to keep stability above 25% at all times.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFAQ(this)">
+      <div class="faq-q">▶ I typed the repair code correctly but it didn't work. Why?</div>
+      <div class="faq-a">Make sure you're typing in ALL CAPS. The codes are case-sensitive and must match exactly. The hint shows you the exact code — copy it precisely. Press ENTER after typing to submit.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFAQ(this)">
+      <div class="faq-q">▶ What is the maximum possible score?</div>
+      <div class="faq-a">Fix-It Felix Jr. has 4 glitches (2×CRIT + 1×HIGH + 1×MED = 900pts), Hero's Duty has 3 (CRIT+HIGH+MED = 600pts), Sugar Rush has 3 (CRIT+HIGH+MED = 600pts). Plus up to +600 time bonus. Max theoretical score: ~2700 points!</div>
+    </div>
+    <div class="faq-item" onclick="toggleFAQ(this)">
+      <div class="faq-q">▶ Can I repair all three games in one session?</div>
+      <div class="faq-a">Yes! After completing repairs on one game, go back to Game Select and choose another game. You can repair all 3 games in a single session for maximum score.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFAQ(this)">
+      <div class="faq-q">▶ Why does Sugar Rush show as OFFLINE?</div>
+      <div class="faq-a">Ralph unplugged it (classic Ralph). It still has glitches that need fixing — go into Sugar Rush's repair panel, fix all 3 glitches, and restart the game to bring it back online!</div>
+    </div>
+    <div class="faq-item" onclick="toggleFAQ(this)">
+      <div class="faq-q">▶ What does the Emergency Button do?</div>
+      <div class="faq-a">The ⚡ EMERGENCY button instantly jumps you to another screen. Useful if you need to quickly check your status or get back to the game list. It also triggers a satisfying glitch effect!</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <div class="footer-text">GAME CENTRAL STATION OS v2.4.1 — RALPH EDITION</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a href="../index.html" class="px-btn grn" style="font-size:7px;padding:8px 14px">▶ PLAY NOW</a>
+      <a href="leaderboard.html" class="px-btn" style="font-size:7px;padding:8px 14px">🏆 LEADERBOARD</a>
+    </div>
+  </div>
+
+</div><!-- end page-wrap -->
+
+<script>
+const cur = document.getElementById('cursor');
+document.addEventListener('mousemove', e => { cur.style.left = e.clientX+'px'; cur.style.top = e.clientY+'px'; });
+
+function toggleFAQ(el) {
+  const wasOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(f => f.classList.remove('open'));
+  if (!wasOpen) el.classList.add('open');
+}
+
+// Glitch effect on scroll
+const glitchOverlay = document.getElementById('glitch-overlay');
+function doGlitch() {
+  glitchOverlay.classList.remove('pop'); void glitchOverlay.offsetWidth;
+  glitchOverlay.classList.add('pop');
+  setTimeout(() => glitchOverlay.classList.remove('pop'), 360);
+}
+setInterval(() => { if (Math.random() < 0.3) doGlitch(); }, 8000);
+
+// Animate step cards on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.animation = 'slideUp 0.4s ease forwards';
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.step-card, .char-guide-card, .faq-item').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

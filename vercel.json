@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "name": "game-central-station",
+  "routes": [
+    {
+      "src": "/how-to-play",
+      "dest": "/pages/how-to-play.html"
+    },
+    {
+      "src": "/leaderboard",
+      "dest": "/pages/leaderboard.html"
+    },
+    {
+      "src": "/about",
+      "dest": "/pages/about.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}
