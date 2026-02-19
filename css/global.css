@@ -158,7 +158,9 @@ body:active #cursor { transform: translate(-50%, -50%) scale(0.75) rotate(-25deg
 }
 .tooltip-wrap:hover .tooltip { visibility: visible; opacity: 1; }
 
-/* ── ANIMATIONS ── */
+/* ══════════════════════════════════════════
+   ANIMATIONS — CORE
+══════════════════════════════════════════ */
 @keyframes flicker  { 0%,18%,22%,25%,54%,56%,100%{opacity:1}20%,24%,55%{opacity:0.4} }
 @keyframes float    { 0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)} }
 @keyframes blink    { 0%,100%{opacity:1}50%{opacity:0} }
@@ -169,18 +171,67 @@ body:active #cursor { transform: translate(-50%, -50%) scale(0.75) rotate(-25deg
 @keyframes zoomIn   { from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1} }
 @keyframes spin     { to{transform:rotate(360deg)} }
 @keyframes marquee  { from{transform:translateX(100%)}to{transform:translateX(-100%)} }
+
+/* ── GLITCH KEYFRAMES ── */
 @keyframes glitchPop{ 0%{opacity:0;background:transparent;transform:translate(0)}10%{opacity:.5;background:rgba(255,36,66,.25);transform:translate(-4px,2px)}25%{opacity:.6;background:rgba(0,212,255,.2);transform:translate(4px,-2px)}40%{opacity:.4;background:rgba(191,0,255,.2);transform:translate(-2px,2px)}60%{opacity:.3;background:rgba(57,255,20,.15);transform:translate(2px,-1px)}100%{opacity:0;background:transparent;transform:translate(0)} }
 @keyframes glitchA  { 0%,100%{clip-path:inset(0 0 98% 0);transform:translate(-5px);color:var(--red)}25%{clip-path:inset(30% 0 50% 0);transform:translate(5px);color:var(--blue)}50%{clip-path:inset(60% 0 20% 0);transform:translate(-3px);color:var(--purple)}75%{clip-path:inset(80% 0 5% 0);transform:translate(3px);color:var(--green)} }
 @keyframes glitchB  { 0%,100%{clip-path:inset(50% 0 30% 0);transform:translate(4px)}33%{clip-path:inset(10% 0 70% 0);transform:translate(-4px)}66%{clip-path:inset(70% 0 10% 0);transform:translate(2px)} }
+
+/* ── PULSE KEYFRAMES ── */
 @keyframes pulseRed   { 0%,100%{box-shadow:0 0 8px var(--red),0 0 18px var(--red),inset 0 0 8px rgba(255,36,66,0.08)}50%{box-shadow:0 0 18px var(--red),0 0 40px var(--red),0 0 70px rgba(255,36,66,0.25),inset 0 0 16px rgba(255,36,66,0.16)} }
 @keyframes pulseBlue  { 0%,100%{box-shadow:0 0 8px var(--blue),0 0 18px var(--blue)}50%{box-shadow:0 0 18px var(--blue),0 0 40px var(--blue),0 0 70px rgba(0,212,255,0.25)} }
 @keyframes pulseGreen { 0%,100%{box-shadow:0 0 8px var(--green),0 0 18px var(--green)}50%{box-shadow:0 0 18px var(--green),0 0 40px var(--green),0 0 70px rgba(57,255,20,0.25)} }
 @keyframes pulseGold  { 0%,100%{box-shadow:0 0 8px var(--gold),0 0 18px var(--gold)}50%{box-shadow:0 0 18px var(--gold),0 0 40px var(--gold),0 0 70px rgba(255,215,0,0.25)} }
 @keyframes pulsePurp  { 0%,100%{box-shadow:0 0 8px var(--purple),0 0 18px var(--purple)}50%{box-shadow:0 0 18px var(--purple),0 0 40px var(--purple),0 0 70px rgba(191,0,255,0.25)} }
+
+/* ── PARTICLE / OBJECT KEYFRAMES ── */
 @keyframes brickFall  { to{transform:translate(var(--tx),var(--ty)) rotate(var(--rot));opacity:0} }
 @keyframes confettiFall { to{transform:translateY(110vh) rotate(720deg);opacity:0} }
 @keyframes typewriter { from{width:0}to{width:100%} }
 @keyframes neonFlare  { 0%,100%{text-shadow:0 0 7px currentColor,0 0 10px currentColor,0 0 21px currentColor}50%{text-shadow:0 0 14px currentColor,0 0 28px currentColor,0 0 56px currentColor} }
+
+/* ══════════════════════════════════════════
+   DISASTER ANIMATIONS — GLOBAL SUPPORT
+══════════════════════════════════════════ */
+
+/* DISASTER 8: PANIC MODE */
+@keyframes panicBg        { 0%,100%{background:radial-gradient(ellipse at center,#15001e 0%,var(--bg) 70%)}50%{background:radial-gradient(ellipse at center,#2a0008 0%,#0f0005 70%)} }
+@keyframes panicPulse     { 0%,100%{border-color:#ff2442;box-shadow:0 0 8px #ff2442,0 0 18px #ff2442}50%{border-color:#ff0000;box-shadow:0 0 30px #ff0000,0 0 60px rgba(255,0,0,.5)} }
+@keyframes ralphWinBlink  { 0%,49%{opacity:1;color:#ff2442}50%,100%{opacity:.3;color:#ff0000} }
+@keyframes jitter         { 0%,100%{transform:translateX(0)}20%{transform:translateX(-2px)}40%{transform:translateX(3px)}60%{transform:translateX(-1px)}80%{transform:translateX(2px)} }
+@keyframes panicShake     { 0%,100%{transform:translate(0)}25%{transform:translate(-2px,1px)}75%{transform:translate(2px,-1px)} }
+
+/* DISASTER 3: PIXELATION */
+@keyframes pixelatePanel  { 0%,88%,100%{filter:none}89%,99%{filter:blur(1px) contrast(300%) saturate(0);image-rendering:pixelated} }
+
+/* DISASTER 1: BUTTON DRIFT */
+@keyframes gentleDrift    { 0%{transform:translate(0,0)}25%{transform:translate(2px,-1px)}50%{transform:translate(-1px,2px)}75%{transform:translate(3px,0px)}100%{transform:translate(0,0)} }
+
+/* DISASTER 10: FAKE ERROR */
+@keyframes errorFlash     { 0%,100%{background:#000}50%{background:rgba(255,36,66,.05)} }
+@keyframes errorShake     { 0%,100%{transform:translate(0)}20%{transform:translate(-5px,2px)}40%{transform:translate(5px,-2px)}60%{transform:translate(-3px,3px)}80%{transform:translate(3px,-1px)} }
+
+/* DISASTER 5: DAMAGED CARD TILT */
+@keyframes damagedWobble  { 0%,100%{transform:rotate(-2deg) translateY(5px)}50%{transform:rotate(-2.5deg) translateY(6px)} }
+
+/* ── GLOBAL PANIC CLASSES ── */
+/* Applied via JS when stability < 30% — available to all pages */
+.panic-bg     { animation: panicBg 1.2s ease-in-out infinite !important; }
+.panic-panel  { animation: panicPulse .4s ease-in-out infinite !important; border-color: #ff0000 !important; }
+.panic-jitter { animation: jitter .25s infinite !important; }
+.panic-timer  { animation: jitter .2s infinite, blink .4s infinite !important; }
+
+/* ── GLOBAL PIXELATION CLASS ── */
+/* Can be applied to any element on any page */
+.pixelating   { animation: pixelatePanel 5s ease-in-out infinite; }
+
+/* ── GLOBAL DRIFT CLASS (DISASTER 1) ── */
+.is-drifting  { animation: gentleDrift 3.5s ease-in-out infinite; }
+
+/* ── SCRAMBLED HINT STATES (DISASTER 2) ── */
+.state-scrambled  { color: var(--red)  !important; animation: blink .12s infinite !important; letter-spacing: 2px; }
+.state-decrypting { color: #ff8800    !important; animation: blink .3s infinite !important; }
+.state-revealed   { color: var(--green)!important; animation: none !important; }
 
 /* ── TICKER BAR ── */
 .ticker-bar {
@@ -237,6 +288,21 @@ body:active #cursor { transform: translate(-50%, -50%) scale(0.75) rotate(-25deg
   color: var(--muted); margin-top: 4px;
 }
 
+/* ── HOW-TO-PLAY PAGE — DISASTER 3 TITLE PIXELATION ── */
+/* Applied to the how-to-play page title via JS */
+.htp-title-pixelate { animation: pixelatePanel 4s ease-in-out infinite; }
+
+/* ── HOW-TO-PLAY PAGE — DELETED WORD STYLE (DISASTER 6) ── */
+.ralph-deleted {
+  font-family: var(--font-pixel);
+  font-size: 0.7em;
+  color: var(--red);
+  background: rgba(255, 36, 66, 0.1);
+  border: 1px dashed var(--red);
+  padding: 1px 4px;
+  animation: blink 1s infinite;
+}
+
 /* ── UTILITY ── */
 .hidden   { display: none !important; }
 .centered { text-align: center; }
@@ -244,7 +310,7 @@ body:active #cursor { transform: translate(-50%, -50%) scale(0.75) rotate(-25deg
 .flex-col { display: flex; flex-direction: column; }
 .gap-4    { gap: 4px; } .gap-8 { gap: 8px; } .gap-12 { gap: 12px; }
 .wrap     { flex-wrap: wrap; }
-.items-center { align-items: center; }
+.items-center    { align-items: center; }
 .justify-between { justify-content: space-between; }
 .justify-center  { justify-content: center; }
 .w-full   { width: 100%; }
